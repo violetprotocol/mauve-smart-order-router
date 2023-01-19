@@ -163,6 +163,13 @@ export const UNI_GÖRLI = new Token(
   'UNI',
   'Uni token'
 );
+export const LINK_GÖRLI = new Token(
+  ChainId.GÖRLI,
+  '0x326C977E6efc84E512bB9C30f76E30c160eD06FB',
+  18,
+  'LINK',
+  'ChainLink Token'
+);
 
 export const USDC_KOVAN = new Token(
   ChainId.KOVAN,
