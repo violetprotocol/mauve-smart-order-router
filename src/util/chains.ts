@@ -21,29 +21,28 @@ export enum ChainId {
 
 // WIP: Gnosis, Moonbeam
 export const SUPPORTED_CHAINS: ChainId[] = [
-  ChainId.MAINNET,
-  ChainId.RINKEBY,
-  ChainId.ROPSTEN,
-  ChainId.KOVAN,
-  ChainId.OPTIMISM,
-  ChainId.OPTIMISTIC_KOVAN,
-  ChainId.ARBITRUM_ONE,
-  ChainId.ARBITRUM_RINKEBY,
-  ChainId.ARBITRUM_GOERLI,
-  ChainId.POLYGON,
-  ChainId.POLYGON_MUMBAI,
+  // ChainId.MAINNET,
+  // ChainId.RINKEBY,
+  // ChainId.ROPSTEN,
+  // ChainId.KOVAN,
+  // ChainId.OPTIMISM,
+  // ChainId.OPTIMISTIC_KOVAN,
+  // ChainId.ARBITRUM_ONE,
+  // ChainId.ARBITRUM_RINKEBY,
+  // ChainId.POLYGON,
+  // ChainId.POLYGON_MUMBAI,
   ChainId.GÖRLI,
-  ChainId.CELO_ALFAJORES,
-  ChainId.CELO,
+  // ChainId.CELO_ALFAJORES,
+  // ChainId.CELO,
   // Gnosis and Moonbeam don't yet have contracts deployed yet
 ];
 
 export const V2_SUPPORTED = [
-  ChainId.MAINNET,
+  // ChainId.MAINNET,
   ChainId.KOVAN,
-  ChainId.GÖRLI,
-  ChainId.RINKEBY,
-  ChainId.ROPSTEN,
+  // ChainId.GÖRLI,
+  // ChainId.RINKEBY,
+  // ChainId.ROPSTEN,
 ];
 
 export const HAS_L1_FEE = [
