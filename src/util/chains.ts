@@ -4,7 +4,7 @@ export enum ChainId {
   MAINNET = 1,
   ROPSTEN = 3,
   RINKEBY = 4,
-  GÖRLI = 5,
+  GOERLI = 5,
   KOVAN = 42,
   OPTIMISM = 10,
   OPTIMISTIC_KOVAN = 69,
@@ -31,7 +31,7 @@ export const SUPPORTED_CHAINS: ChainId[] = [
   // ChainId.ARBITRUM_RINKEBY,
   // ChainId.POLYGON,
   // ChainId.POLYGON_MUMBAI,
-  ChainId.GÖRLI,
+  ChainId.GOERLI,
   // ChainId.CELO_ALFAJORES,
   // ChainId.CELO,
   // Gnosis and Moonbeam don't yet have contracts deployed yet
@@ -40,7 +40,7 @@ export const SUPPORTED_CHAINS: ChainId[] = [
 export const V2_SUPPORTED = [
   // ChainId.MAINNET,
   ChainId.KOVAN,
-  // ChainId.GÖRLI,
+  // ChainId.GOERLI,
   // ChainId.RINKEBY,
   // ChainId.ROPSTEN,
 ];
@@ -57,7 +57,7 @@ export const NETWORKS_WITH_SAME_UNISWAP_ADDRESSES = [
   ChainId.MAINNET,
   ChainId.ROPSTEN,
   ChainId.RINKEBY,
-  ChainId.GÖRLI,
+  ChainId.GOERLI,
   ChainId.KOVAN,
   ChainId.OPTIMISM,
   ChainId.OPTIMISTIC_KOVAN,
@@ -76,7 +76,7 @@ export const ID_TO_CHAIN_ID = (id: number): ChainId => {
     case 4:
       return ChainId.RINKEBY;
     case 5:
-      return ChainId.GÖRLI;
+      return ChainId.GOERLI;
     case 42:
       return ChainId.KOVAN;
     case 10:
@@ -110,7 +110,7 @@ export enum ChainName {
   MAINNET = 'mainnet',
   ROPSTEN = 'ropsten',
   RINKEBY = 'rinkeby',
-  GÖRLI = 'goerli',
+  GOERLI = 'goerli',
   KOVAN = 'kovan',
   OPTIMISM = 'optimism-mainnet',
   OPTIMISTIC_KOVAN = 'optimism-kovan',
@@ -144,7 +144,7 @@ export const NATIVE_NAMES_BY_ID: { [chainId: number]: string[] } = {
     'ETHER',
     '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
   ],
-  [ChainId.GÖRLI]: [
+  [ChainId.GOERLI]: [
     'ETH',
     'ETHER',
     '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
@@ -199,7 +199,7 @@ export const NATIVE_CURRENCY: { [chainId: number]: NativeCurrencyName } = {
   [ChainId.MAINNET]: NativeCurrencyName.ETHER,
   [ChainId.ROPSTEN]: NativeCurrencyName.ETHER,
   [ChainId.RINKEBY]: NativeCurrencyName.ETHER,
-  [ChainId.GÖRLI]: NativeCurrencyName.ETHER,
+  [ChainId.GOERLI]: NativeCurrencyName.ETHER,
   [ChainId.KOVAN]: NativeCurrencyName.ETHER,
   [ChainId.OPTIMISM]: NativeCurrencyName.ETHER,
   [ChainId.OPTIMISTIC_KOVAN]: NativeCurrencyName.ETHER,
@@ -223,7 +223,7 @@ export const ID_TO_NETWORK_NAME = (id: number): ChainName => {
     case 4:
       return ChainName.RINKEBY;
     case 5:
-      return ChainName.GÖRLI;
+      return ChainName.GOERLI;
     case 42:
       return ChainName.KOVAN;
     case 10:
@@ -265,7 +265,7 @@ export const ID_TO_PROVIDER = (id: ChainId): string => {
       return process.env.JSON_RPC_PROVIDER_ROPSTEN!;
     case ChainId.RINKEBY:
       return process.env.JSON_RPC_PROVIDER_RINKEBY!;
-    case ChainId.GÖRLI:
+    case ChainId.GOERLI:
       return process.env.JSON_RPC_PROVIDER_GORLI!;
     case ChainId.KOVAN:
       return process.env.JSON_RPC_PROVIDER_KOVAN!;
@@ -314,7 +314,7 @@ export const WRAPPED_NATIVE_CURRENCY: { [chainId in ChainId]: Token } = {
     'WETH',
     'Wrapped Ether'
   ),
-  [ChainId.GÖRLI]: new Token(
+  [ChainId.GOERLI]: new Token(
     5,
     '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
     18,

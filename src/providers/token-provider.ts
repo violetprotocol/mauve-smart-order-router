@@ -128,43 +128,43 @@ export const USDT_RINKEBY = new Token(
   'Tether USD'
 );
 
-export const USDC_GÖRLI = new Token(
-  ChainId.GÖRLI,
+export const USDC_GOERLI = new Token(
+  ChainId.GOERLI,
   '0x07865c6e87b9f70255377e024ace6630c1eaa37f',
   6,
   'USDC',
   'USD//C'
 );
-export const USDT_GÖRLI = new Token(
-  ChainId.GÖRLI,
+export const USDT_GOERLI = new Token(
+  ChainId.GOERLI,
   '0xe583769738b6dd4e7caf8451050d1948be717679',
   18,
   'USDT',
   'Tether USD'
 );
-export const WBTC_GÖRLI = new Token(
-  ChainId.GÖRLI,
+export const WBTC_GOERLI = new Token(
+  ChainId.GOERLI,
   '0xa0a5ad2296b38bd3e3eb59aaeaf1589e8d9a29a9',
   8,
   'WBTC',
   'Wrapped BTC'
 );
-export const DAI_GÖRLI = new Token(
-  ChainId.GÖRLI,
+export const DAI_GOERLI = new Token(
+  ChainId.GOERLI,
   '0x11fe4b6ae13d2a6055c8d9cf65c55bac32b5d844',
   18,
   'DAI',
   'Dai Stablecoin'
 );
-export const UNI_GÖRLI = new Token(
-  ChainId.GÖRLI,
+export const UNI_GOERLI = new Token(
+  ChainId.GOERLI,
   '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
   18,
   'UNI',
   'Uni token'
 );
-export const LINK_GÖRLI = new Token(
-  ChainId.GÖRLI,
+export const LINK_GOERLI = new Token(
+  ChainId.GOERLI,
   '0x326C977E6efc84E512bB9C30f76E30c160eD06FB',
   18,
   'LINK',
@@ -328,7 +328,7 @@ export const UNI_ARBITRUM_RINKEBY = new Token(
   'Uni token'
 );
 
-// Bridged version of official Goerli USDC 
+// Bridged version of official Goerli USDC
 export const USDC_ARBITRUM_GOERLI = new Token(
   ChainId.ARBITRUM_GOERLI,
   '0x8FB1E3fC51F3b789dED7557E680551d93Ea9d892',
@@ -630,8 +630,8 @@ export const DAI_ON = (chainId: ChainId): Token => {
       return DAI_ROPSTEN;
     case ChainId.RINKEBY:
       return DAI_RINKEBY_1;
-    case ChainId.GÖRLI:
-      return DAI_GÖRLI;
+    case ChainId.GOERLI:
+      return DAI_GOERLI;
     case ChainId.KOVAN:
       return DAI_KOVAN;
     case ChainId.OPTIMISM:
@@ -665,8 +665,8 @@ export const USDT_ON = (chainId: ChainId): Token => {
       return USDT_ROPSTEN;
     case ChainId.RINKEBY:
       return USDT_RINKEBY;
-    case ChainId.GÖRLI:
-      return USDT_GÖRLI;
+    case ChainId.GOERLI:
+      return USDT_GOERLI;
     case ChainId.KOVAN:
       return USDT_KOVAN;
     case ChainId.OPTIMISM:
@@ -690,8 +690,8 @@ export const USDC_ON = (chainId: ChainId): Token => {
       return USDC_ROPSTEN;
     case ChainId.RINKEBY:
       return USDC_RINKEBY;
-    case ChainId.GÖRLI:
-      return USDC_GÖRLI;
+    case ChainId.GOERLI:
+      return USDC_GOERLI;
     case ChainId.KOVAN:
       return USDC_KOVAN;
     case ChainId.OPTIMISM:

@@ -57,7 +57,7 @@ const SUBGRAPH_URL_BY_CHAIN: { [chainId in ChainId]?: string } = {
     'https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-polygon',
   [ChainId.CELO]:
     'https://api.thegraph.com/subgraphs/name/jesse-sawa/uniswap-celo',
-  [ChainId.GÖRLI]:
+  [ChainId.GOERLI]:
     'https://api.thegraph.com/subgraphs/name/violetprotocol/phlox-subgraph',
 };
 
