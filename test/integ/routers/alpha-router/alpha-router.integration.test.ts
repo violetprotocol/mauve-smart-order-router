@@ -41,7 +41,7 @@ import {
   SWAP_ROUTER_02_ADDRESS,
   TenderlySimulator,
   UniswapMulticallProvider,
-  UNI_GOERLI,
+  UNI_GÖRLI,
   UNI_MAINNET,
   USDC_ETHEREUM_GNOSIS,
   USDC_MAINNET,
@@ -2517,7 +2517,7 @@ describe('quote for other networks', () => {
     [ChainId.MAINNET]: USDC_ON(1),
     [ChainId.ROPSTEN]: USDC_ON(ChainId.ROPSTEN),
     [ChainId.RINKEBY]: USDC_ON(ChainId.RINKEBY),
-    [ChainId.GOERLI]: UNI_GOERLI,
+    [ChainId.GÖRLI]: UNI_GÖRLI,
     [ChainId.KOVAN]: USDC_ON(ChainId.KOVAN),
     [ChainId.OPTIMISM]: USDC_ON(ChainId.OPTIMISM),
     [ChainId.OPTIMISTIC_KOVAN]: USDC_ON(ChainId.OPTIMISTIC_KOVAN),
@@ -2535,7 +2535,7 @@ describe('quote for other networks', () => {
     [ChainId.MAINNET]: DAI_ON(1),
     [ChainId.ROPSTEN]: DAI_ON(ChainId.ROPSTEN),
     [ChainId.RINKEBY]: DAI_ON(ChainId.RINKEBY),
-    [ChainId.GOERLI]: DAI_ON(ChainId.GOERLI),
+    [ChainId.GÖRLI]: DAI_ON(ChainId.GÖRLI),
     [ChainId.KOVAN]: DAI_ON(ChainId.KOVAN),
     [ChainId.OPTIMISM]: DAI_ON(ChainId.OPTIMISM),
     [ChainId.OPTIMISTIC_KOVAN]: DAI_ON(ChainId.OPTIMISTIC_KOVAN),
@@ -2802,7 +2802,7 @@ describe('quote for other networks', () => {
 
               // Universal Router is not deployed on Gorli.
               const swapOptions: SwapOptions =
-                chain == ChainId.GOERLI
+                chain == ChainId.GÖRLI
                   ? {
                       type: SwapType.SWAP_ROUTER_02,
                       recipient: WHALES(tokenIn),
@@ -2857,7 +2857,7 @@ describe('quote for other networks', () => {
 
               // Universal Router is not deployed on Gorli.
               const swapOptions: SwapOptions =
-                chain == ChainId.GOERLI
+                chain == ChainId.GÖRLI
                   ? {
                       type: SwapType.SWAP_ROUTER_02,
                       recipient: WHALES(tokenIn),
@@ -2912,7 +2912,7 @@ describe('quote for other networks', () => {
 
               // Universal Router is not deployed on Gorli.
               const swapOptions: SwapOptions =
-                chain == ChainId.GOERLI
+                chain == ChainId.GÖRLI
                   ? {
                       type: SwapType.SWAP_ROUTER_02,
                       recipient: WHALES(tokenIn),

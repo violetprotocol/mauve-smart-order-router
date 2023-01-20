@@ -33,7 +33,7 @@ const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
     DAI_RINKEBY_1,
     DAI_RINKEBY_2,
   ],
-  [ChainId.GOERLI]: [WRAPPED_NATIVE_CURRENCY[ChainId.GOERLI]!],
+  [ChainId.GÖRLI]: [WRAPPED_NATIVE_CURRENCY[ChainId.GÖRLI]!],
   [ChainId.KOVAN]: [WRAPPED_NATIVE_CURRENCY[ChainId.KOVAN]!],
   //v2 not deployed on [optimism, arbitrum, polygon, celo, gnosis, moonbeam] and their testnets
   [ChainId.OPTIMISM]: [],

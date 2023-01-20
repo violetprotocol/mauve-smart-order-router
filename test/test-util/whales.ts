@@ -8,7 +8,7 @@ import {
   DAI_ON,
   ExtendedEther,
   nativeOnChain,
-  UNI_GOERLI,
+  UNI_GÖRLI,
   UNI_MAINNET,
   USDC_MAINNET,
   USDC_ON,
@@ -27,7 +27,7 @@ export const WHALES = (token: Currency): string => {
       return '0xf977814e90da44bfa03b6295a0616a897441acec';
     case nativeOnChain(ChainId.POLYGON):
       return '0xe7804c37c13166ff0b37f5ae0bb07a3aebb6e245';
-    case nativeOnChain(ChainId.GOERLI):
+    case nativeOnChain(ChainId.GÖRLI):
       return '0x08505F42D5666225d5d73B842dAdB87CCA44d1AE';
     case WETH9[1]:
       return '0x06920c9fc643de77b99cb7670a944ad31eaaa260';
@@ -39,7 +39,7 @@ export const WHALES = (token: Currency): string => {
       return '0xa71937147b55deb8a530c7229c442fd3f31b7db2';
     case WNATIVE_ON(ChainId.RINKEBY):
       return '0xf1c9dc0baa21bb260e192c8a52ee97c887456fb2';
-    case WNATIVE_ON(ChainId.GOERLI):
+    case WNATIVE_ON(ChainId.GÖRLI):
       return '0x2372031bb0fc735722aa4009aebf66e8beaf4ba1';
     case WNATIVE_ON(ChainId.ROPSTEN):
       return '0xc1a0babbe0e77ba1e8d9f627d281823518735839';
@@ -55,7 +55,7 @@ export const WHALES = (token: Currency): string => {
       return '0x366d1dd8558b59398439a01fb6935f6f40ebcd60';
     case USDC_ON(ChainId.RINKEBY):
       return '0x65671d573fc0e62139fbde470bfd03a38b4d5f26';
-    case UNI_GOERLI:
+    case UNI_GÖRLI:
       return '0x41653c7d61609d856f29355e404f310ec4142cfb';
     case USDC_ON(ChainId.KOVAN):
       return '0x9b332466798a7e98bff1107d0846c195a99c1fc5';
@@ -77,7 +77,7 @@ export const WHALES = (token: Currency): string => {
       return '0x922b992698381c7dc8d23684e2caef396b0b73a4';
     case DAI_ON(ChainId.RINKEBY):
       return '0xcea4e535d03086dbaa04c71675129654e92cc055';
-    case DAI_ON(ChainId.GOERLI):
+    case DAI_ON(ChainId.GÖRLI):
       return '0x20918f71e99c09ae2ac3e33dbde33457d3be01f4';
     case DAI_ON(ChainId.KOVAN):
       return '0x9b332466798a7e98bff1107d0846c195a99c1fc5';

@@ -25,7 +25,7 @@ export const V3_CORE_FACTORY_ADDRESSES: AddressMap = {
   // [ChainId.ARBITRUM_GOERLI]: ARBITRUM_GOERLI_V3_CORE_FACTORY_ADDRESSES,
   // TODO: Gnosis + Moonbeam contracts to be deployed
   // override GOERLI
-  [ChainId.GOERLI]: GOERLI_FACTORY_ADDRESS,
+  [ChainId.GÖRLI]: GOERLI_FACTORY_ADDRESS,
 };
 
 export const QUOTER_V2_ADDRESSES: AddressMap = {
@@ -36,7 +36,7 @@ export const QUOTER_V2_ADDRESSES: AddressMap = {
   // [ChainId.ARBITRUM_GOERLI]: ARBITRUM_GOERLI_QUOTER_ADDRESSES,
   // TODO: Gnosis + Moonbeam contracts to be deployed
   // override GOERLI
-  [ChainId.GOERLI]: GOERLI_QUOTER_V2,
+  [ChainId.GÖRLI]: GOERLI_QUOTER_V2,
 };
 
 export const MIXED_ROUTE_QUOTER_V1_ADDRESSES: AddressMap = {
@@ -44,7 +44,7 @@ export const MIXED_ROUTE_QUOTER_V1_ADDRESSES: AddressMap = {
   [ChainId.RINKEBY]: '0x84E44095eeBfEC7793Cd7d5b57B7e401D7f1cA2E',
   [ChainId.ROPSTEN]: '0x84E44095eeBfEC7793Cd7d5b57B7e401D7f1cA2E',
   // // override GOERLI
-  [ChainId.GOERLI]: GOERLI_QUOTER,
+  [ChainId.GÖRLI]: GOERLI_QUOTER,
 };
 
 export const UNISWAP_MULTICALL_ADDRESSES: AddressMap = {
@@ -114,8 +114,8 @@ export const WETH9: {
     'WETH',
     'Wrapped Ether'
   ),
-  [ChainId.GOERLI]: new Token(
-    ChainId.GOERLI,
+  [ChainId.GÖRLI]: new Token(
+    ChainId.GÖRLI,
     '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
     18,
     'WETH',
