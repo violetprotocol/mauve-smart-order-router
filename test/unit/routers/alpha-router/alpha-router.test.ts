@@ -400,7 +400,8 @@ describe('alpha router', () => {
   });
 
   describe('exact in', () => {
-    test('succeeds to route across all protocols when no protocols specified', async () => {
+    // Skipping this test as we are not interested to route across all protocols, only V3.
+    test.skip('succeeds to route across all protocols when no protocols specified', async () => {
       // Mock the quote providers so that for each protocol, one route and one
       // amount less than 100% of the input gives a huge quote.
       // Ensures a split route.
@@ -1176,7 +1177,8 @@ describe('alpha router', () => {
       expect(swap!.blockNumber.toString()).toEqual(mockBlockBN.toString());
     });
 
-    test('finds a route with no protocols specified and forceMixedRoutes is true', async () => {
+    // Skipping this test as we are not allowing mixed routes
+    test.skip('finds a route with no protocols specified and forceMixedRoutes is true', async () => {
       const swap = await alphaRouter.route(
         CurrencyAmount.fromRawAmount(USDC, 10000),
         WRAPPED_NATIVE_CURRENCY[1],
@@ -1653,7 +1655,8 @@ describe('alpha router', () => {
   });
 
   describe('exact out', () => {
-    test('succeeds to route across all protocols', async () => {
+    // Skipping this test as we are not interested to route across all protocols, only V3.
+    test.skip('succeeds to route across all protocols', async () => {
       // Mock the quote providers so that for each protocol, one route and one
       // amount less than 100% of the input gives a huge quote.
       // Ensures a split route.
