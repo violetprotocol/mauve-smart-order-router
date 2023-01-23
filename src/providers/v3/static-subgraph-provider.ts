@@ -3,6 +3,7 @@ import { FeeAmount, Pool } from '@uniswap/v3-sdk';
 import JSBI from 'jsbi';
 import _ from 'lodash';
 
+import { V3_CORE_FACTORY_ADDRESSES } from '../../util';
 import { unparseFeeAmount } from '../../util/amounts';
 import { ChainId, WRAPPED_NATIVE_CURRENCY } from '../../util/chains';
 import { log } from '../../util/log';
@@ -229,7 +230,13 @@ export class StaticV3SubgraphProvider implements IV3SubgraphProvider {
       .map((pool) => {
         const { token0, token1, fee, liquidity } = pool;
 
-        const poolAddress = Pool.getAddress(pool.token0, pool.token1, pool.fee);
+        const poolAddress = Pool.getAddress(
+          pool.token0,
+          pool.token1,
+          pool.fee,
+          undefined,
+          pool.chainId ? V3_CORE_FACTORY_ADDRESSES[pool.chainId] : undefined
+        );
 
         if (poolAddressSet.has(poolAddress)) {
           return undefined;
