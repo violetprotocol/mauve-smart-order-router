@@ -707,7 +707,8 @@ export class AlphaRouter
           ...routingConfig,
           /// @dev We do not want to query for mixedRoutes for routeToRatio as they are not supported
           /// [Protocol.V3, Protocol.V2] will make sure we only query for V3 and V2
-          protocols: [Protocol.V3, Protocol.V2],
+          // EDIT: Removed V2 as well for Mauve
+          protocols: [Protocol.V3],
         }
       );
       if (!swap) {

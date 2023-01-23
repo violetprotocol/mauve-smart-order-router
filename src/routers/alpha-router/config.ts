@@ -1,3 +1,5 @@
+import { Protocol } from '@uniswap/router-sdk';
+
 import { ChainId } from '../../util/chains';
 
 import { AlphaRouterConfig } from './alpha-router';
@@ -65,6 +67,7 @@ export const DEFAULT_ROUTING_CONFIG_BY_CHAIN = (
       };
     default:
       return {
+        protocols: [Protocol.V3],
         v2PoolSelection: {
           topN: 3,
           topNDirectSwaps: 1,

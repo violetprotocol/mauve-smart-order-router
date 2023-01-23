@@ -4,7 +4,7 @@ import { Pair } from '@uniswap/v2-sdk';
 import { Pool } from '@uniswap/v3-sdk';
 import _ from 'lodash';
 
-import { CurrencyAmount } from '.';
+import { CurrencyAmount, V3_CORE_FACTORY_ADDRESSES } from '.';
 import { RouteWithValidQuote } from '../routers/alpha-router';
 import { MixedRoute, V2Route, V3Route } from '../routers/router';
 
@@ -28,7 +28,9 @@ export const routeToString = (
         ? ` -- ${pool.fee / 10000}% [${Pool.getAddress(
             pool.token0,
             pool.token1,
-            pool.fee
+            pool.fee,
+            undefined,
+            pool.chainId ? V3_CORE_FACTORY_ADDRESSES[pool.chainId] : undefined
           )}]`
         : ` -- [${Pair.getAddress(
             (pool as Pair).token0,

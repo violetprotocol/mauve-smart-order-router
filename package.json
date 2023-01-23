@@ -1,6 +1,6 @@
 {
   "name": "@violetprotocol/mauve-smart-order-router",
-  "version": "0.0.1",
+  "version": "4.0.0",
   "description": "Mauve Smart Order Router",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
