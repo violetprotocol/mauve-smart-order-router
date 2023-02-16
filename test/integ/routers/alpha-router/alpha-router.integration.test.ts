@@ -125,7 +125,7 @@ const isTenderlyEnvironmentSet = (): boolean => {
 };
 
 // Flag for enabling logs for debugging integ tests
-if (process.env.INTEG_TEST_DEBUG && false) {
+if (process.env.INTEG_TEST_DEBUG) {
   setGlobalLogger(
     bunyan.createLogger({
       name: 'Uniswap Smart Order Router',
