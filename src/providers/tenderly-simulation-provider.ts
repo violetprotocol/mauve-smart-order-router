@@ -238,6 +238,7 @@ export class TenderlySimulator extends Simulator {
     }
 
     // Parse the gas used in the simulation response object, and then pad it so that we overestimate.
+    // eslint-disable-next-line prefer-const
     estimatedGasUsed = BigNumber.from(
       (
         resp.simulation_results[1].transaction.gas_used * estimateMultiplier
