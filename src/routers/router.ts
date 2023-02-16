@@ -12,7 +12,6 @@ import {
   Token,
   TradeType,
 } from '@uniswap/sdk-core';
-import { SwapOptions as UniversalRouterSwapOptions } from '@uniswap/universal-router-sdk';
 import { Route as V2RouteRaw } from '@uniswap/v2-sdk';
 import {
   MethodParameters as SDKMethodParameters,
@@ -124,15 +123,9 @@ export type SwapToRatioResponse =
   | SwapToRatioNoSwapNeeded;
 
 export enum SwapType {
-  UNIVERSAL_ROUTER,
   SWAP_ROUTER_02,
 }
 
-// Swap options for Universal Router and Permit2.
-export type SwapOptionsUniversalRouter = UniversalRouterSwapOptions & {
-  type: SwapType.UNIVERSAL_ROUTER;
-  simulate?: { fromAddress: string };
-};
 
 // Swap options for router-sdk and SwapRouter02.
 export type SwapOptionsSwapRouter02 = {
@@ -157,7 +150,7 @@ export type SwapOptionsSwapRouter02 = {
   );
 };
 
-export type SwapOptions = SwapOptionsUniversalRouter | SwapOptionsSwapRouter02;
+export type SwapOptions = SwapOptionsSwapRouter02;
 
 // Config passed in to determine configurations on acceptable liquidity
 // to add to a position and max iterations on the route-finding algorithm

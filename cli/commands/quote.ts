@@ -117,8 +117,8 @@ export class Quote extends BaseCommand {
         TradeType.EXACT_INPUT,
         recipient
           ? {
-              type: SwapType.UNIVERSAL_ROUTER,
-              deadlineOrPreviousBlockhash: 10000000000000,
+              type: SwapType.SWAP_ROUTER_02,
+              deadline: 10000000000000,
               recipient,
               slippageTolerance: new Percent(5, 100),
               simulate: simulate ? { fromAddress: recipient } : undefined,

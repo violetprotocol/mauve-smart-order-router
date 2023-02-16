@@ -1071,11 +1071,7 @@ export class AlphaRouter
     // If user provided recipient, deadline etc. we also generate the calldata required to execute
     // the swap and return it too.
     if (swapConfig) {
-      methodParameters = buildSwapMethodParameters(
-        trade,
-        swapConfig,
-        this.chainId
-      );
+      methodParameters = buildSwapMethodParameters(trade, swapConfig);
     }
 
     metric.putMetric(
