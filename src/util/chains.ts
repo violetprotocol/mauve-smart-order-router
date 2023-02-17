@@ -38,11 +38,11 @@ export const SUPPORTED_CHAINS: ChainId[] = [
 ];
 
 export const V2_SUPPORTED = [
-  ChainId.MAINNET,
+  // ChainId.MAINNET,
   ChainId.KOVAN,
-  ChainId.GOERLI,
-  ChainId.RINKEBY,
-  ChainId.ROPSTEN,
+  // ChainId.GOERLI,
+  // ChainId.RINKEBY,
+  // ChainId.ROPSTEN,
 ];
 
 export const HAS_L1_FEE = [

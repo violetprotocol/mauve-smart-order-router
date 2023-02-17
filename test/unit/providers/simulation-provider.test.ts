@@ -80,9 +80,9 @@ const quote = {
 } as unknown as CurrencyAmount;
 const blockNumber = BigNumber.from(0);
 const swapOptions: SwapOptions = {
-  type: SwapType.UNIVERSAL_ROUTER,
+  type: SwapType.SWAP_ROUTER_02,
   slippageTolerance: new Percent(5, 100),
-  deadlineOrPreviousBlockhash: 10000000,
+  deadline: 10000000,
   recipient: '0x0',
 };
 const chainId = ChainId.MAINNET;

@@ -1,11 +1,9 @@
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { TradeType } from '@uniswap/sdk-core';
-import { PERMIT2_ADDRESS } from '@uniswap/universal-router-sdk';
 import { BigNumber } from 'ethers/lib/ethers';
 
 import { SwapOptions, SwapRoute, SwapType } from '../routers';
 import { Erc20__factory } from '../types/other/factories/Erc20__factory';
-import { Permit2__factory } from '../types/other/factories/Permit2__factory';
 import { ChainId, CurrencyAmount, log, SWAP_ROUTER_02_ADDRESS } from '../util';
 
 import { ProviderConfig } from './provider';
@@ -144,61 +142,7 @@ export abstract class Simulator {
       provider
     );
 
-    if (swapOptions.type == SwapType.UNIVERSAL_ROUTER) {
-      const permit2Allowance = await tokenContract.allowance(
-        fromAddress,
-        PERMIT2_ADDRESS
-      );
-
-      // If a permit has been provided we don't need to check if UR has already been allowed.
-      if (swapOptions.inputTokenPermit) {
-        log.info(
-          {
-            permitAllowance: permit2Allowance.toString(),
-            inputAmount: inputAmount.quotient.toString(),
-          },
-          'Permit was provided for simulation on UR, checking that Permit2 has been approved.'
-        );
-        return permit2Allowance.gte(
-          BigNumber.from(inputAmount.quotient.toString())
-        );
-      }
-
-      // Check UR has been approved from Permit2.
-      const permit2Contract = Permit2__factory.connect(
-        PERMIT2_ADDRESS,
-        provider
-      );
-
-      const { amount: universalRouterAllowance, expiration: tokenExpiration } =
-        await permit2Contract.allowance(
-          fromAddress,
-          inputAmount.currency.wrapped.address,
-          SWAP_ROUTER_02_ADDRESS
-        );
-
-      const nowTimestampS = Math.round(Date.now() / 1000);
-      const inputAmountBN = BigNumber.from(inputAmount.quotient.toString());
-
-      const permit2Approved = permit2Allowance.gte(inputAmountBN);
-      const universalRouterApproved =
-        universalRouterAllowance.gte(inputAmountBN);
-      const expirationValid = tokenExpiration > nowTimestampS;
-      log.info(
-        {
-          permitAllowance: permit2Allowance.toString(),
-          tokenAllowance: universalRouterAllowance.toString(),
-          tokenExpirationS: tokenExpiration,
-          nowTimestampS,
-          inputAmount: inputAmount.quotient.toString(),
-          permit2Approved,
-          universalRouterApproved,
-          expirationValid,
-        },
-        `Simulating on UR, Permit2 approved: ${permit2Approved}, UR approved: ${universalRouterApproved}, Expiraton valid: ${expirationValid}.`
-      );
-      return permit2Approved && universalRouterApproved && expirationValid;
-    } else if (swapOptions.type == SwapType.SWAP_ROUTER_02) {
+    if (swapOptions.type == SwapType.SWAP_ROUTER_02) {
       if (swapOptions.inputTokenPermit) {
         log.info(
           {
