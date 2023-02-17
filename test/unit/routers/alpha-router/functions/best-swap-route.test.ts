@@ -1,7 +1,7 @@
 import { BigNumber } from '@ethersproject/bignumber';
-import { Fraction, TradeType } from '@uniswap/sdk-core';
-import { Pair } from '@uniswap/v2-sdk';
-import { Pool } from '@uniswap/v3-sdk';
+import { Fraction, TradeType } from '@violetprotocol/mauve-sdk-core';
+import { Pair } from '@violetprotocol/mauve-v2-sdk';
+import { Pool } from '@violetprotocol/mauve-v3-sdk';
 import JSBI from 'jsbi';
 import _ from 'lodash';
 import sinon from 'sinon';

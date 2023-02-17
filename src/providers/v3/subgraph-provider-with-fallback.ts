@@ -1,4 +1,4 @@
-import { Token } from '@uniswap/sdk-core';
+import { Token } from '@violetprotocol/mauve-sdk-core';
 
 import { log } from '../../util';
 import { ProviderConfig } from '../provider';

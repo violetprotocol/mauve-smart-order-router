@@ -1,5 +1,5 @@
-import { Token } from '@uniswap/sdk-core';
-import { FeeAmount, Pool } from '@uniswap/v3-sdk';
+import { Token } from '@violetprotocol/mauve-sdk-core';
+import { FeeAmount, Pool } from '@violetprotocol/mauve-v3-sdk';
 import _ from 'lodash';
 
 import { ChainId } from '../../util/chains';

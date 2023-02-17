@@ -9,7 +9,7 @@ import {
   Percent,
   Token,
   TradeType,
-} from '@uniswap/sdk-core';
+} from '@violetprotocol/mauve-sdk-core';
 import {
   AlphaRouter,
   AlphaRouterConfig,
@@ -62,9 +62,13 @@ import { WHALES } from '../../../test-util/whales';
 import 'jest-environment-hardhat';
 
 import { JsonRpcProvider, JsonRpcSigner } from '@ethersproject/providers';
-import { Protocol } from '@uniswap/router-sdk';
-import { Pair } from '@uniswap/v2-sdk';
-import { encodeSqrtRatioX96, FeeAmount, Pool } from '@uniswap/v3-sdk';
+import { Protocol } from '@violetprotocol/mauve-router-sdk';
+import { Pair } from '@violetprotocol/mauve-v2-sdk';
+import {
+  encodeSqrtRatioX96,
+  FeeAmount,
+  Pool,
+} from '@violetprotocol/mauve-v3-sdk';
 import bunyan from 'bunyan';
 import { BigNumber, providers } from 'ethers';
 import { parseEther } from 'ethers/lib/utils';
