@@ -59,7 +59,7 @@ import {
 } from '../../../../src';
 import { WHALES } from '../../../test-util/whales';
 
-import 'jest-environment-hardhat';
+import '@violetprotocol/mauve-jest-environment-hardhat';
 
 import { JsonRpcProvider, JsonRpcSigner } from '@ethersproject/providers';
 import { Protocol } from '@violetprotocol/mauve-router-sdk';

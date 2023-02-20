@@ -6,5 +6,5 @@ module.exports = {
   /**
    * @dev use this if we have multiple integration test files
    */
-  // testEnvironment: "jest-environment-hardhat"
+  // testEnvironment: "@violetprotocol/mauve-jest-environment-hardhat"
 };
