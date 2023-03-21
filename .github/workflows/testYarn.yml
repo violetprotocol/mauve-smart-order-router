@@ -1,0 +1,53 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14.14.0
+          registry-url: https://registry.npmjs.org
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - id: yarn-cache
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - uses: actions/cache@v1
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            yarn-
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # This is required separately from yarn test because it generates the typechain definitions
+      - name: Compile
+        run: yarn build
+
+      - name: Run unit tests
+        run: yarn test
+        env:
+          JSON_RPC_PROVIDER: ${{ secrets.JSON_RPC_PROVIDER }}
+          JSON_RPC_PROVIDER_RINKEBY: ${{ secrets.JSON_RPC_PROVIDER_RINKEBY }}
+          JSON_RPC_PROVIDER_ROPSTEN: ${{ secrets.JSON_RPC_PROVIDER_ROPSTEN }}
+          JSON_RPC_PROVIDER_KOVAN: ${{ secrets.JSON_RPC_PROVIDER_KOVAN }}
+          JSON_RPC_PROVIDER_GORLI: ${{ secrets.JSON_RPC_PROVIDER_GORLI }}
+          JSON_RPC_PROVIDER_OPTIMISM: ${{ secrets.JSON_RPC_PROVIDER_OPTIMISM }}
+          JSON_RPC_PROVIDER_ARBITRUM_ONE: ${{ secrets.JSON_RPC_PROVIDER_ARBITRUM_ONE }}
+          JSON_RPC_PROVIDER_POLYGON: ${{ secrets.JSON_RPC_PROVIDER_POLYGON }}
