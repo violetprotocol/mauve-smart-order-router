@@ -17,6 +17,7 @@ jobs:
         with:
           node-version: 12.x
           registry-url: https://registry.npmjs.org
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - uses: actions/cache@v2
         with:
@@ -25,11 +26,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Authenticate with private NPM package
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+      # - name: Authenticate with private NPM package
+      #   run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
 
       - name: Install dependencies
         run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # This is required separately from yarn test because it generates the typechain definitions
       - name: Compile
