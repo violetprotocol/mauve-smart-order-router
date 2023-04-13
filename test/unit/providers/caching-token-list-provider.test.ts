@@ -1,4 +1,4 @@
-import { Token } from '@uniswap/sdk-core';
+import { Token } from '@violetprotocol/mauve-sdk-core';
 import _ from 'lodash';
 import sinon from 'sinon';
 import {

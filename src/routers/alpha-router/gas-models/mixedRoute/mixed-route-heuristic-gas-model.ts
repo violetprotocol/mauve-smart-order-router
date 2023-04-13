@@ -1,7 +1,7 @@
 import { BigNumber } from '@ethersproject/bignumber';
-import { partitionMixedRouteByProtocol } from '@uniswap/router-sdk';
-import { Pair } from '@uniswap/v2-sdk';
-import { Pool } from '@uniswap/v3-sdk';
+import { partitionMixedRouteByProtocol } from '@violetprotocol/mauve-router-sdk';
+import { Pair } from '@violetprotocol/mauve-v2-sdk';
+import { Pool } from '@violetprotocol/mauve-v3-sdk';
 import _ from 'lodash';
 
 import { WRAPPED_NATIVE_CURRENCY } from '../../../..';

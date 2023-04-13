@@ -1,7 +1,7 @@
-import { Protocol } from '@uniswap/router-sdk';
-import { Percent } from '@uniswap/sdk-core';
-import { Pair } from '@uniswap/v2-sdk';
-import { Pool } from '@uniswap/v3-sdk';
+import { Protocol } from '@violetprotocol/mauve-router-sdk';
+import { Percent } from '@violetprotocol/mauve-sdk-core';
+import { Pair } from '@violetprotocol/mauve-v2-sdk';
+import { Pool } from '@violetprotocol/mauve-v3-sdk';
 import _ from 'lodash';
 
 import { CurrencyAmount, V3_CORE_FACTORY_ADDRESSES } from '.';

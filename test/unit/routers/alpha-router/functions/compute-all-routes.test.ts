@@ -1,5 +1,9 @@
-import { Pair } from '@uniswap/v2-sdk';
-import { encodeSqrtRatioX96, FeeAmount, Pool } from '@uniswap/v3-sdk';
+import { Pair } from '@violetprotocol/mauve-v2-sdk';
+import {
+  encodeSqrtRatioX96,
+  FeeAmount,
+  Pool,
+} from '@violetprotocol/mauve-v3-sdk';
 import {
   CurrencyAmount,
   DAI_MAINNET as DAI,

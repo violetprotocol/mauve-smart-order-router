@@ -1,6 +1,6 @@
 import { BigNumber } from '@ethersproject/bignumber';
-import { Percent, TradeType } from '@uniswap/sdk-core';
-import { Pool } from '@uniswap/v3-sdk';
+import { Percent, TradeType } from '@violetprotocol/mauve-sdk-core';
+import { Pool } from '@violetprotocol/mauve-v3-sdk';
 import _ from 'lodash';
 
 import {

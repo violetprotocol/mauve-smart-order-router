@@ -1,4 +1,4 @@
-import { Protocol } from '@uniswap/router-sdk';
+import { Protocol } from '@violetprotocol/mauve-router-sdk';
 
 import { ChainId } from '../../util/chains';
 

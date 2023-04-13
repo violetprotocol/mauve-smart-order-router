@@ -4,21 +4,21 @@ import {
   MixedRouteSDK,
   Protocol,
   Trade,
-} from '@uniswap/router-sdk';
+} from '@violetprotocol/mauve-router-sdk';
 import {
   Currency,
   Fraction,
   Percent,
   Token,
   TradeType,
-} from '@uniswap/sdk-core';
-import { Route as V2RouteRaw } from '@uniswap/v2-sdk';
+} from '@violetprotocol/mauve-sdk-core';
+import { Route as V2RouteRaw } from '@violetprotocol/mauve-v2-sdk';
 import {
   MethodParameters as SDKMethodParameters,
   Pool,
   Position,
   Route as V3RouteRaw,
-} from '@uniswap/v3-sdk';
+} from '@violetprotocol/mauve-v3-sdk';
 
 import { SimulationStatus } from '../providers';
 import { CurrencyAmount } from '../util/amounts';
@@ -125,7 +125,6 @@ export type SwapToRatioResponse =
 export enum SwapType {
   SWAP_ROUTER_02,
 }
-
 
 // Swap options for router-sdk and SwapRouter02.
 export type SwapOptionsSwapRouter02 = {

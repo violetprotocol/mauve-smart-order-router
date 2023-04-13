@@ -1,6 +1,6 @@
-import { Protocol } from '@uniswap/router-sdk';
-import { Token, TradeType } from '@uniswap/sdk-core';
-import { FeeAmount } from '@uniswap/v3-sdk';
+import { Protocol } from '@violetprotocol/mauve-router-sdk';
+import { Token, TradeType } from '@violetprotocol/mauve-sdk-core';
+import { FeeAmount } from '@violetprotocol/mauve-v3-sdk';
 import _ from 'lodash';
 
 import {

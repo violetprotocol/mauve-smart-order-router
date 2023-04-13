@@ -1,5 +1,5 @@
 import { JsonRpcProvider } from '@ethersproject/providers';
-import { TradeType } from '@uniswap/sdk-core';
+import { TradeType } from '@violetprotocol/mauve-sdk-core';
 import { BigNumber } from 'ethers/lib/ethers';
 
 import { SwapOptions, SwapRoute, SwapType } from '../routers';

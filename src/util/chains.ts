@@ -1,4 +1,9 @@
-import { Currency, Ether, NativeCurrency, Token } from '@uniswap/sdk-core';
+import {
+  Currency,
+  Ether,
+  NativeCurrency,
+  Token,
+} from '@violetprotocol/mauve-sdk-core';
 
 export enum ChainId {
   MAINNET = 1,
