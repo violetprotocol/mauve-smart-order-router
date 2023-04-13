@@ -1,5 +1,5 @@
-import { Token } from '@violetprotocol/mauve-sdk-core';
 import { TokenInfo, TokenList } from '@uniswap/token-lists';
+import { Token } from '@violetprotocol/mauve-sdk-core';
 import axios from 'axios';
 import _ from 'lodash';
 

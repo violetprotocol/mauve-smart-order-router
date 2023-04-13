@@ -1,6 +1,7 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { BaseProvider, JsonRpcProvider } from '@ethersproject/providers';
 import DEFAULT_TOKEN_LIST from '@uniswap/default-token-list';
+import { TokenList } from '@uniswap/token-lists';
 import { Protocol, SwapRouter, Trade } from '@violetprotocol/mauve-router-sdk';
 import {
   Currency,
@@ -8,7 +9,6 @@ import {
   Token,
   TradeType,
 } from '@violetprotocol/mauve-sdk-core';
-import { TokenList } from '@uniswap/token-lists';
 import { Pair } from '@violetprotocol/mauve-v2-sdk';
 import {
   Pool,

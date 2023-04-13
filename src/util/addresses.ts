@@ -1,5 +1,6 @@
 import { Token } from '@violetprotocol/mauve-sdk-core';
 import { FACTORY_ADDRESS } from '@violetprotocol/mauve-v3-sdk';
+
 import { ChainId, NETWORKS_WITH_SAME_UNISWAP_ADDRESSES } from './chains';
 
 // Phlox Re-Deployments

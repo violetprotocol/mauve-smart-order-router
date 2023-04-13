@@ -3,8 +3,8 @@ import { BaseProvider } from '@ethersproject/providers';
 import _ from 'lodash';
 import stats from 'stats-lite';
 
-import { UniswapInterfaceMulticall__factory } from '../types/v3/factories/UniswapInterfaceMulticall__factory';
-import { UniswapInterfaceMulticall } from '../types/v3/UniswapInterfaceMulticall';
+import { MauveInterfaceMulticall } from '../types/v3/MauveInterfaceMulticall';
+import { MauveInterfaceMulticall__factory } from '../types/v3/factories/MauveInterfaceMulticall__factory';
 import { ChainId } from '../util';
 import { UNISWAP_MULTICALL_ADDRESSES } from '../util/addresses';
 import { log } from '../util/log';
@@ -31,7 +31,7 @@ export type UniswapMulticallConfig = {
  * @class UniswapMulticallProvider
  */
 export class UniswapMulticallProvider extends IMulticallProvider<UniswapMulticallConfig> {
-  private multicallContract: UniswapInterfaceMulticall;
+  private multicallContract: MauveInterfaceMulticall;
 
   constructor(
     protected chainId: ChainId,
@@ -47,7 +47,7 @@ export class UniswapMulticallProvider extends IMulticallProvider<UniswapMultical
       );
     }
 
-    this.multicallContract = UniswapInterfaceMulticall__factory.connect(
+    this.multicallContract = MauveInterfaceMulticall__factory.connect(
       multicallAddress,
       this.provider
     );
