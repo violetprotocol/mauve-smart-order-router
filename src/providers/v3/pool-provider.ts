@@ -234,6 +234,10 @@ export class V3PoolProvider implements IV3PoolProvider {
       tokenA: token0,
       tokenB: token1,
       fee: feeAmount,
+      // TODO: This is a temporary fix to work with the newly deployed `MauvePool(s)` but
+      // to be removed as soon as we update mauve-v3-sdk dependency to a newer version
+      initCodeHashManualOverride:
+        '0x35cf190007bfd8b78434816f3c1a816e2f40d11142531305b87684814b75dae4',
     });
 
     this.POOL_ADDRESS_CACHE[cacheKey] = poolAddress;
