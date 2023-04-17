@@ -613,7 +613,11 @@ export class AlphaRouter
     this.swapRouterProvider =
       swapRouterProvider ?? new SwapRouterProvider(this.multicall2Provider);
 
-    if (chainId == ChainId.OPTIMISM || chainId == ChainId.OPTIMISTIC_KOVAN) {
+    if (
+      chainId == ChainId.OPTIMISM ||
+      chainId == ChainId.OPTIMISTIC_KOVAN ||
+      chainId == ChainId.OPTIMISM_GOERLI
+    ) {
       this.l2GasDataProvider =
         optimismGasDataProvider ??
         new OptimismGasDataProvider(chainId, this.multicall2Provider);
