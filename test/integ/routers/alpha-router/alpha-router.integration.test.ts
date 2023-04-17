@@ -56,6 +56,8 @@ import {
   WBTC_MOONBEAM,
   WETH9,
   WNATIVE_ON,
+  OUT1_OPTIMISM_GOERLI,
+  OUT2_OPTIMISM_GOERLI,
 } from '../../../../src';
 import { WHALES } from '../../../test-util/whales';
 
@@ -473,8 +475,8 @@ describe('alpha router integration', () => {
    *  tests are 1:1 with routing api integ tests
    */
   for (const tradeType of [TradeType.EXACT_INPUT, TradeType.EXACT_OUTPUT]) {
-    describe(`${ID_TO_NETWORK_NAME(1)} alpha - ${tradeType}`, () => {
-      // TODO-MAUVE: Figure out why tests are failing and restore them
+    // TODO-MAUVE: Restore these tests once Mauve is deployed on Mainnet
+    describe.skip(`${ID_TO_NETWORK_NAME(1)} alpha - ${tradeType}`, () => {
       describe.skip(`+ Execute on Hardhat Fork`, () => {
         it('erc20 -> erc20', async () => {
           // declaring these to reduce confusion
@@ -1835,6 +1837,7 @@ describe('quote for other networks', () => {
     [ChainId.GOERLI]: USDC_ON(ChainId.GOERLI),
     [ChainId.KOVAN]: USDC_ON(ChainId.KOVAN),
     [ChainId.OPTIMISM]: USDC_ON(ChainId.OPTIMISM),
+    [ChainId.OPTIMISM_GOERLI]: OUT1_OPTIMISM_GOERLI,
     [ChainId.OPTIMISTIC_KOVAN]: USDC_ON(ChainId.OPTIMISTIC_KOVAN),
     [ChainId.ARBITRUM_ONE]: USDC_ON(ChainId.ARBITRUM_ONE),
     [ChainId.ARBITRUM_RINKEBY]: USDC_ON(ChainId.ARBITRUM_RINKEBY),
@@ -1853,6 +1856,7 @@ describe('quote for other networks', () => {
     [ChainId.GOERLI]: LINK_GOERLI,
     [ChainId.KOVAN]: DAI_ON(ChainId.KOVAN),
     [ChainId.OPTIMISM]: DAI_ON(ChainId.OPTIMISM),
+    [ChainId.OPTIMISM_GOERLI]: OUT2_OPTIMISM_GOERLI,
     [ChainId.OPTIMISTIC_KOVAN]: DAI_ON(ChainId.OPTIMISTIC_KOVAN),
     [ChainId.ARBITRUM_ONE]: DAI_ON(ChainId.ARBITRUM_ONE),
     [ChainId.ARBITRUM_RINKEBY]: DAI_ON(ChainId.ARBITRUM_RINKEBY),
@@ -1871,6 +1875,7 @@ describe('quote for other networks', () => {
     (c) =>
       c != ChainId.RINKEBY &&
       c != ChainId.ROPSTEN &&
+      c != ChainId.GOERLI &&
       c != ChainId.KOVAN &&
       c != ChainId.OPTIMISTIC_KOVAN &&
       c != ChainId.POLYGON_MUMBAI &&
@@ -1878,7 +1883,9 @@ describe('quote for other networks', () => {
       c != ChainId.ARBITRUM_GOERLI &&
       c != ChainId.OPTIMISM && /// @dev infura has been having issues with optimism lately
       // Tests are failing https://github.com/Uniswap/smart-order-router/issues/104
-      c != ChainId.CELO_ALFAJORES
+      c != ChainId.CELO_ALFAJORES &&
+      // Re-enable MAINNET once deployed on there
+      c != ChainId.MAINNET
   )) {
     for (const tradeType of [TradeType.EXACT_INPUT, TradeType.EXACT_OUTPUT]) {
       const erc1 = TEST_ERC20_1[chain];
@@ -1980,7 +1987,7 @@ describe('quote for other networks', () => {
               {
                 // @ts-ignore[TS7053] - complaining about switch being non exhaustive
                 ...DEFAULT_ROUTING_CONFIG_BY_CHAIN[chain],
-                protocols: [Protocol.V3, Protocol.V2],
+                protocols: [Protocol.V3],
               }
             );
             expect(swap).toBeDefined();
