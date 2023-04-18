@@ -71,10 +71,10 @@ export const COST_PER_HOP = (id: ChainId): BigNumber => {
     case ChainId.ROPSTEN:
     case ChainId.RINKEBY:
     case ChainId.GOERLI:
-    case ChainId.KOVAN:
     case ChainId.OPTIMISM:
     case ChainId.OPTIMISM_GOERLI:
     case ChainId.OPTIMISTIC_KOVAN:
+    case ChainId.KOVAN:
       return BigNumber.from(80000);
     case ChainId.ARBITRUM_ONE:
     case ChainId.ARBITRUM_RINKEBY:
