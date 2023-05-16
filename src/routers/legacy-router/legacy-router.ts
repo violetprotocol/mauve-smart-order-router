@@ -511,7 +511,6 @@ export class LegacyRouter {
             outputAmount: quoteCurrency,
           },
         ],
-        v2Routes: [],
         tradeType: tradeType,
       });
     } else {
@@ -541,7 +540,6 @@ export class LegacyRouter {
             outputAmount: amountCurrency,
           },
         ],
-        v2Routes: [],
         tradeType: tradeType,
       });
     }
