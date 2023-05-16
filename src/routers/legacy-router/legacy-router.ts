@@ -577,6 +577,9 @@ export class LegacyRouter {
       //   : {}),
     });
 
-    return methodParameters;
+    return {
+      ...methodParameters,
+      calldata: '', // monkey patch to silence type errors
+    };
   }
 }
