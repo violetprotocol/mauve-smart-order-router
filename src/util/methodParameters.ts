@@ -4,7 +4,10 @@ import {
   Trade,
 } from '@violetprotocol/mauve-router-sdk';
 import { Currency, TradeType } from '@violetprotocol/mauve-sdk-core';
-import { Route as V3RouteRaw } from '@violetprotocol/mauve-v3-sdk';
+import {
+  EATMulticall,
+  Route as V3RouteRaw,
+} from '@violetprotocol/mauve-v3-sdk';
 import _ from 'lodash';
 
 import {
@@ -231,14 +234,26 @@ export function buildSwapMethodParameters(
   const { recipient, slippageTolerance, deadline, inputTokenPermit } =
     swapConfig;
 
+  const params = SwapRouter02.swapCallParameters(trade, {
+    recipient,
+    slippageTolerance,
+    deadlineOrPreviousBlockhash: deadline,
+    inputTokenPermit,
+  });
+
+  const methodParameters = {
+    ...params,
+    calldata: EATMulticall.encodePostsignMulticall(
+      1,
+      '0x292ed37c45d202799980884fb9c2f5f4bcef5f73cb781194276d9381963e91cb',
+      '0x292ed37c45d202799980884fb9c2f5f4bcef5f73cb781194276d9381963e91cb',
+      Math.floor(new Date().getTime() / 1000),
+      params.calls
+    ),
+  };
+
   return {
-    ...SwapRouter02.swapCallParameters(trade, {
-      recipient,
-      slippageTolerance,
-      deadlineOrPreviousBlockhash: deadline,
-      inputTokenPermit,
-    }),
+    ...methodParameters,
     to: SWAP_ROUTER_02_ADDRESS,
-    calldata: '', // monkey patch to silence type errors
   };
 }

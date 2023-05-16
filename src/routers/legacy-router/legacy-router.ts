@@ -3,6 +3,7 @@ import { Logger } from '@ethersproject/logger';
 import { SwapRouter, Trade } from '@violetprotocol/mauve-router-sdk';
 import { Currency, Token, TradeType } from '@violetprotocol/mauve-sdk-core';
 import {
+  EATMulticall,
   FeeAmount,
   MethodParameters,
   Pool,
@@ -551,7 +552,7 @@ export class LegacyRouter {
   ): MethodParameters {
     const { recipient, slippageTolerance, deadline } = swapConfig;
 
-    const methodParameters = SwapRouter.swapCallParameters(trade, {
+    const params = SwapRouter.swapCallParameters(trade, {
       recipient,
       slippageTolerance,
       deadlineOrPreviousBlockhash: deadline,
@@ -577,9 +578,19 @@ export class LegacyRouter {
       //   : {}),
     });
 
+    const methodParameters = {
+      ...params,
+      calldata: EATMulticall.encodePostsignMulticall(
+        1,
+        '0x292ed37c45d202799980884fb9c2f5f4bcef5f73cb781194276d9381963e91cb',
+        '0x292ed37c45d202799980884fb9c2f5f4bcef5f73cb781194276d9381963e91cb',
+        Math.floor(new Date().getTime() / 1000),
+        params.calls
+      ),
+    };
+
     return {
       ...methodParameters,
-      calldata: '', // monkey patch to silence type errors
     };
   }
 }
