@@ -1,7 +1,7 @@
 import { ApprovalTypes } from '@violetprotocol/mauve-router-sdk';
 import { Currency, CurrencyAmount } from '@violetprotocol/mauve-sdk-core';
 
-import { SwapRouter02__factory } from '../types/other/factories/SwapRouter02__factory';
+import { MauveSwapRouter__factory } from '../types/other/factories/MauveSwapRouter__factory';
 import { log, SWAP_ROUTER_02_ADDRESS } from '../util';
 
 import { IMulticallProvider } from './multicall-provider';
@@ -55,7 +55,7 @@ export class SwapRouterProvider implements ISwapRouterProvider {
         [ApprovalTypes]
       >({
         address: SWAP_ROUTER_02_ADDRESS,
-        contractInterface: SwapRouter02__factory.createInterface(),
+        contractInterface: MauveSwapRouter__factory.createInterface(),
         functionName: 'getApprovalType',
         functionParams,
       });
