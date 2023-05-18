@@ -1,6 +1,6 @@
-# Uniswap Smart Order Router
+# Mauve Smart Order Router
 
-This repository contains routing logic for the Uniswap V3 protocol.
+This repository contains routing logic for the Mauve protocol.
 
 It searches for the most efficient way to swap token A for token B, considering splitting swaps across multiple routes and gas costs.
 

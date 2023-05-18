@@ -478,6 +478,8 @@ export class OnChainQuoteProvider implements IOnChainQuoteProvider {
                     },
                   });
 
+                console.log(results);
+
                 const successRateError = this.validateSuccessRate(
                   results.results,
                   haveRetriedForSuccessRate
@@ -573,6 +575,7 @@ export class OnChainQuoteProvider implements IOnChainQuoteProvider {
           );
 
           for (const failedQuoteState of failedQuoteStates) {
+            console.log(failedQuoteState);
             const { reason: error } = failedQuoteState;
 
             log.info(

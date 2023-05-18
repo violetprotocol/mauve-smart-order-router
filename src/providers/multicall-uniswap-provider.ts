@@ -3,8 +3,8 @@ import { BaseProvider } from '@ethersproject/providers';
 import _ from 'lodash';
 import stats from 'stats-lite';
 
-import { MauveInterfaceMulticall } from '../types/v3/MauveInterfaceMulticall';
 import { MauveInterfaceMulticall__factory } from '../types/v3/factories/MauveInterfaceMulticall__factory';
+import { MauveInterfaceMulticall } from '../types/v3/MauveInterfaceMulticall';
 import { ChainId } from '../util';
 import { UNISWAP_MULTICALL_ADDRESSES } from '../util/addresses';
 import { log } from '../util/log';
@@ -158,6 +158,8 @@ export class UniswapMulticallProvider extends IMulticallProvider<UniswapMultical
       additionalConfig?.gasLimitPerCallOverride ?? this.gasLimitPerCall;
     const blockNumberOverride = providerConfig?.blockNumber ?? undefined;
 
+    console.log(fragment.name);
+    console.log(functionParams);
     const calls = _.map(functionParams, (functionParam) => {
       const callData = contractInterface.encodeFunctionData(
         fragment,

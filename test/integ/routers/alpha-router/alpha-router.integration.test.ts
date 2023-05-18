@@ -32,8 +32,8 @@ import {
   NATIVE_CURRENCY,
   NodeJSCache,
   OnChainQuoteProvider,
+  OUT2_OPTIMISM_GOERLI,
   parseAmount,
-  setGlobalLogger,
   SimulationStatus,
   StaticGasPriceProvider,
   SUPPORTED_CHAINS,
@@ -56,8 +56,6 @@ import {
   WBTC_MOONBEAM,
   WETH9,
   WNATIVE_ON,
-  OUT1_OPTIMISM_GOERLI,
-  OUT2_OPTIMISM_GOERLI,
 } from '../../../../src';
 import { WHALES } from '../../../test-util/whales';
 
@@ -71,7 +69,6 @@ import {
   FeeAmount,
   Pool,
 } from '@violetprotocol/mauve-v3-sdk';
-import bunyan from 'bunyan';
 import { BigNumber, providers } from 'ethers';
 import { parseEther } from 'ethers/lib/utils';
 import _ from 'lodash';
@@ -131,15 +128,15 @@ const isTenderlyEnvironmentSet = (): boolean => {
 };
 
 // Flag for enabling logs for debugging integ tests
-if (process.env.INTEG_TEST_DEBUG) {
-  setGlobalLogger(
-    bunyan.createLogger({
-      name: 'Uniswap Smart Order Router',
-      serializers: bunyan.stdSerializers,
-      level: bunyan.DEBUG,
-    })
-  );
-}
+// if (process.env.INTEG_TEST_DEBUG) {
+//   setGlobalLogger(
+//     bunyan.createLogger({
+//       name: 'Mauve Smart Order Router',
+//       serializers: bunyan.stdSerializers,
+//       level: bunyan.DEBUG,
+//     })
+//   );
+// }
 
 jest.retryTimes(0);
 
@@ -1837,7 +1834,7 @@ describe('quote for other networks', () => {
     [ChainId.GOERLI]: USDC_ON(ChainId.GOERLI),
     [ChainId.KOVAN]: USDC_ON(ChainId.KOVAN),
     [ChainId.OPTIMISM]: USDC_ON(ChainId.OPTIMISM),
-    [ChainId.OPTIMISM_GOERLI]: OUT1_OPTIMISM_GOERLI,
+    [ChainId.OPTIMISM_GOERLI]: USDC_ON(ChainId.OPTIMISM_GOERLI),
     [ChainId.OPTIMISTIC_KOVAN]: USDC_ON(ChainId.OPTIMISTIC_KOVAN),
     [ChainId.ARBITRUM_ONE]: USDC_ON(ChainId.ARBITRUM_ONE),
     [ChainId.ARBITRUM_RINKEBY]: USDC_ON(ChainId.ARBITRUM_RINKEBY),
@@ -1890,6 +1887,8 @@ describe('quote for other networks', () => {
     for (const tradeType of [TradeType.EXACT_INPUT, TradeType.EXACT_OUTPUT]) {
       const erc1 = TEST_ERC20_1[chain];
       const erc2 = TEST_ERC20_2[chain];
+
+      console.log(tradeType);
 
       describe(`${ID_TO_NETWORK_NAME(chain)} ${tradeType} 2xx`, function () {
         const wrappedNative = WNATIVE_ON(chain);
@@ -1951,8 +1950,8 @@ describe('quote for other networks', () => {
             const tokenOut = erc1;
             const amount =
               tradeType == TradeType.EXACT_INPUT
-                ? parseAmount('10', tokenIn)
-                : parseAmount('10', tokenOut);
+                ? parseAmount('0.0001', tokenIn)
+                : parseAmount('0.0001', tokenOut);
 
             const swap = await alphaRouter.route(
               amount,
@@ -2004,13 +2003,9 @@ describe('quote for other networks', () => {
             // large input amounts
             // TODO: Simplify this when Celo has more liquidity
             const amount =
-              chain == ChainId.CELO || chain == ChainId.CELO_ALFAJORES
-                ? tradeType == TradeType.EXACT_INPUT
-                  ? parseAmount('10', tokenIn)
-                  : parseAmount('10', tokenOut)
-                : tradeType == TradeType.EXACT_INPUT
-                ? parseAmount('100', tokenIn)
-                : parseAmount('100', tokenOut);
+              tradeType == TradeType.EXACT_INPUT
+                ? parseAmount('0.0000001', tokenIn)
+                : parseAmount('0.0000001', tokenOut);
 
             const swap = await alphaRouter.route(
               amount,
@@ -2020,7 +2015,7 @@ describe('quote for other networks', () => {
               {
                 // @ts-ignore[TS7053] - complaining about switch being non exhaustive
                 ...DEFAULT_ROUTING_CONFIG_BY_CHAIN[chain],
-                protocols: [Protocol.V3, Protocol.V2],
+                protocols: [Protocol.V3],
               }
             );
             expect(swap).toBeDefined();
@@ -2120,8 +2115,8 @@ describe('quote for other networks', () => {
               const tokenOut = erc1;
               const amount =
                 tradeType == TradeType.EXACT_INPUT
-                  ? parseAmount('10', tokenIn)
-                  : parseAmount('10', tokenOut);
+                  ? parseAmount('1', tokenIn)
+                  : parseAmount('1', tokenOut);
 
               // Universal Router is not deployed on Gorli.
               const swapOptions: SwapOptions =

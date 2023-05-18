@@ -23,7 +23,7 @@ Logger.globalLogger();
 Logger.setLogLevel(Logger.levels.DEBUG);
 
 export class QuoteToRatio extends BaseCommand {
-  static description = 'Uniswap Smart Order Router CLI';
+  static description = 'Mauve Smart Order Router CLI';
 
   static flags = {
     ...BaseCommand.flags,
