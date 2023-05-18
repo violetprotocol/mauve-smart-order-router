@@ -61,6 +61,7 @@ import {
 } from '../../../../src';
 import { WHALES } from '../../../test-util/whales';
 
+import bunyan from 'bunyan';
 import 'jest-environment-hardhat';
 
 import { JsonRpcProvider, JsonRpcSigner } from '@ethersproject/providers';
