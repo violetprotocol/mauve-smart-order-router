@@ -1951,8 +1951,8 @@ describe('quote for other networks', () => {
             const tokenOut = erc1;
             const amount =
               tradeType == TradeType.EXACT_INPUT
-                ? parseAmount('0.0001', tokenIn)
-                : parseAmount('0.0001', tokenOut);
+                ? parseAmount('1', tokenIn)
+                : parseAmount('1', tokenOut);
 
             const swap = await alphaRouter.route(
               amount,
@@ -2005,8 +2005,8 @@ describe('quote for other networks', () => {
             // TODO: Simplify this when Celo has more liquidity
             const amount =
               tradeType == TradeType.EXACT_INPUT
-                ? parseAmount('0.0001', tokenIn)
-                : parseAmount('0.0001', tokenOut);
+                ? parseAmount('1', tokenIn)
+                : parseAmount('1', tokenOut);
 
             const swap = await alphaRouter.route(
               amount,
