@@ -625,6 +625,8 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
     }
   }
 
+  // [MAUVE-DISABLED]: RouteToRatio primarily is used with mixed route or v2 pools which
+  //                    are unsupported in Mauve
   // public async routeToRatio(
   //   token0Balance: CurrencyAmount,
   //   token1Balance: CurrencyAmount,
