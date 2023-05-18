@@ -1,23 +1,22 @@
 import {
-  MixedRouteSDK,
   Protocol,
   SwapRouter as SwapRouter02,
   Trade,
 } from '@violetprotocol/mauve-router-sdk';
 import { Currency, TradeType } from '@violetprotocol/mauve-sdk-core';
-import { Route as V2RouteRaw } from '@violetprotocol/mauve-v2-sdk';
-import { Route as V3RouteRaw } from '@violetprotocol/mauve-v3-sdk';
+import {
+  EATMulticall,
+  Route as V3RouteRaw,
+} from '@violetprotocol/mauve-v3-sdk';
 import _ from 'lodash';
 
 import {
   CurrencyAmount,
   MethodParameters,
-  MixedRouteWithValidQuote,
   RouteWithValidQuote,
+  SWAP_ROUTER_02_ADDRESS,
   SwapOptions,
   SwapType,
-  SWAP_ROUTER_02_ADDRESS,
-  V2RouteWithValidQuote,
   V3RouteWithValidQuote,
 } from '..';
 
@@ -32,14 +31,14 @@ export function buildTrade<TTradeType extends TradeType>(
     routeAmounts,
     (routeAmount) => routeAmount.protocol === Protocol.V3
   );
-  const v2RouteAmounts = _.filter(
-    routeAmounts,
-    (routeAmount) => routeAmount.protocol === Protocol.V2
-  );
-  const mixedRouteAmounts = _.filter(
-    routeAmounts,
-    (routeAmount) => routeAmount.protocol === Protocol.MIXED
-  );
+  // const v2RouteAmounts = _.filter(
+  //   routeAmounts,
+  //   (routeAmount) => routeAmount.protocol === Protocol.V2
+  // );
+  // const mixedRouteAmounts = _.filter(
+  //   routeAmounts,
+  //   (routeAmount) => routeAmount.protocol === Protocol.MIXED
+  // );
 
   const v3Routes = _.map<
     V3RouteWithValidQuote,
@@ -107,119 +106,119 @@ export function buildTrade<TTradeType extends TradeType>(
     }
   );
 
-  const v2Routes = _.map<
-    V2RouteWithValidQuote,
-    {
-      routev2: V2RouteRaw<Currency, Currency>;
-      inputAmount: CurrencyAmount;
-      outputAmount: CurrencyAmount;
-    }
-  >(
-    v2RouteAmounts as V2RouteWithValidQuote[],
-    (routeAmount: V2RouteWithValidQuote) => {
-      const { route, amount, quote } = routeAmount;
+  // const v2Routes = _.map<
+  //   V2RouteWithValidQuote,
+  //   {
+  //     routev2: V2RouteRaw<Currency, Currency>;
+  //     inputAmount: CurrencyAmount;
+  //     outputAmount: CurrencyAmount;
+  //   }
+  // >(
+  //   v2RouteAmounts as V2RouteWithValidQuote[],
+  //   (routeAmount: V2RouteWithValidQuote) => {
+  //     const { route, amount, quote } = routeAmount;
 
-      // The route, amount and quote are all in terms of wrapped tokens.
-      // When constructing the Trade object the inputAmount/outputAmount must
-      // use native currencies if specified by the user. This is so that the Trade knows to wrap/unwrap.
-      if (tradeType == TradeType.EXACT_INPUT) {
-        const amountCurrency = CurrencyAmount.fromFractionalAmount(
-          tokenInCurrency,
-          amount.numerator,
-          amount.denominator
-        );
-        const quoteCurrency = CurrencyAmount.fromFractionalAmount(
-          tokenOutCurrency,
-          quote.numerator,
-          quote.denominator
-        );
+  //     // The route, amount and quote are all in terms of wrapped tokens.
+  //     // When constructing the Trade object the inputAmount/outputAmount must
+  //     // use native currencies if specified by the user. This is so that the Trade knows to wrap/unwrap.
+  //     if (tradeType == TradeType.EXACT_INPUT) {
+  //       const amountCurrency = CurrencyAmount.fromFractionalAmount(
+  //         tokenInCurrency,
+  //         amount.numerator,
+  //         amount.denominator
+  //       );
+  //       const quoteCurrency = CurrencyAmount.fromFractionalAmount(
+  //         tokenOutCurrency,
+  //         quote.numerator,
+  //         quote.denominator
+  //       );
 
-        const routeV2SDK = new V2RouteRaw(
-          route.pairs,
-          amountCurrency.currency,
-          quoteCurrency.currency
-        );
+  //       const routeV2SDK = new V2RouteRaw(
+  //         route.pairs,
+  //         amountCurrency.currency,
+  //         quoteCurrency.currency
+  //       );
 
-        return {
-          routev2: routeV2SDK,
-          inputAmount: amountCurrency,
-          outputAmount: quoteCurrency,
-        };
-      } else {
-        const quoteCurrency = CurrencyAmount.fromFractionalAmount(
-          tokenInCurrency,
-          quote.numerator,
-          quote.denominator
-        );
+  //       return {
+  //         routev2: routeV2SDK,
+  //         inputAmount: amountCurrency,
+  //         outputAmount: quoteCurrency,
+  //       };
+  //     } else {
+  //       const quoteCurrency = CurrencyAmount.fromFractionalAmount(
+  //         tokenInCurrency,
+  //         quote.numerator,
+  //         quote.denominator
+  //       );
 
-        const amountCurrency = CurrencyAmount.fromFractionalAmount(
-          tokenOutCurrency,
-          amount.numerator,
-          amount.denominator
-        );
+  //       const amountCurrency = CurrencyAmount.fromFractionalAmount(
+  //         tokenOutCurrency,
+  //         amount.numerator,
+  //         amount.denominator
+  //       );
 
-        const routeV2SDK = new V2RouteRaw(
-          route.pairs,
-          quoteCurrency.currency,
-          amountCurrency.currency
-        );
+  //       const routeV2SDK = new V2RouteRaw(
+  //         route.pairs,
+  //         quoteCurrency.currency,
+  //         amountCurrency.currency
+  //       );
 
-        return {
-          routev2: routeV2SDK,
-          inputAmount: quoteCurrency,
-          outputAmount: amountCurrency,
-        };
-      }
-    }
-  );
+  //       return {
+  //         routev2: routeV2SDK,
+  //         inputAmount: quoteCurrency,
+  //         outputAmount: amountCurrency,
+  //       };
+  //     }
+  //   }
+  // );
 
-  const mixedRoutes = _.map<
-    MixedRouteWithValidQuote,
-    {
-      mixedRoute: MixedRouteSDK<Currency, Currency>;
-      inputAmount: CurrencyAmount;
-      outputAmount: CurrencyAmount;
-    }
-  >(
-    mixedRouteAmounts as MixedRouteWithValidQuote[],
-    (routeAmount: MixedRouteWithValidQuote) => {
-      const { route, amount, quote } = routeAmount;
+  // const mixedRoutes = _.map<
+  //   MixedRouteWithValidQuote,
+  //   {
+  //     mixedRoute: MixedRouteSDK<Currency, Currency>;
+  //     inputAmount: CurrencyAmount;
+  //     outputAmount: CurrencyAmount;
+  //   }
+  // >(
+  //   mixedRouteAmounts as MixedRouteWithValidQuote[],
+  //   (routeAmount: MixedRouteWithValidQuote) => {
+  //     const { route, amount, quote } = routeAmount;
 
-      if (tradeType != TradeType.EXACT_INPUT) {
-        throw new Error(
-          'Mixed routes are only supported for exact input trades'
-        );
-      }
+  //     if (tradeType != TradeType.EXACT_INPUT) {
+  //       throw new Error(
+  //         'Mixed routes are only supported for exact input trades'
+  //       );
+  //     }
 
-      // The route, amount and quote are all in terms of wrapped tokens.
-      // When constructing the Trade object the inputAmount/outputAmount must
-      // use native currencies if specified by the user. This is so that the Trade knows to wrap/unwrap.
-      const amountCurrency = CurrencyAmount.fromFractionalAmount(
-        tokenInCurrency,
-        amount.numerator,
-        amount.denominator
-      );
-      const quoteCurrency = CurrencyAmount.fromFractionalAmount(
-        tokenOutCurrency,
-        quote.numerator,
-        quote.denominator
-      );
+  //     // The route, amount and quote are all in terms of wrapped tokens.
+  //     // When constructing the Trade object the inputAmount/outputAmount must
+  //     // use native currencies if specified by the user. This is so that the Trade knows to wrap/unwrap.
+  //     const amountCurrency = CurrencyAmount.fromFractionalAmount(
+  //       tokenInCurrency,
+  //       amount.numerator,
+  //       amount.denominator
+  //     );
+  //     const quoteCurrency = CurrencyAmount.fromFractionalAmount(
+  //       tokenOutCurrency,
+  //       quote.numerator,
+  //       quote.denominator
+  //     );
 
-      const routeRaw = new MixedRouteSDK(
-        route.pools,
-        amountCurrency.currency,
-        quoteCurrency.currency
-      );
+  //     const routeRaw = new MixedRouteSDK(
+  //       route.pools,
+  //       amountCurrency.currency,
+  //       quoteCurrency.currency
+  //     );
 
-      return {
-        mixedRoute: routeRaw,
-        inputAmount: amountCurrency,
-        outputAmount: quoteCurrency,
-      };
-    }
-  );
+  //     return {
+  //       mixedRoute: routeRaw,
+  //       inputAmount: amountCurrency,
+  //       outputAmount: quoteCurrency,
+  //     };
+  //   }
+  // );
 
-  const trade = new Trade({ v2Routes, v3Routes, mixedRoutes, tradeType });
+  const trade = new Trade({ v3Routes, tradeType });
 
   return trade;
 }
@@ -235,13 +234,26 @@ export function buildSwapMethodParameters(
   const { recipient, slippageTolerance, deadline, inputTokenPermit } =
     swapConfig;
 
+  const params = SwapRouter02.swapCallParameters(trade, {
+    recipient,
+    slippageTolerance,
+    deadlineOrPreviousBlockhash: deadline,
+    inputTokenPermit,
+  });
+
+  const methodParameters = {
+    ...params,
+    calldata: EATMulticall.encodePostsignMulticall(
+      1,
+      '0x292ed37c45d202799980884fb9c2f5f4bcef5f73cb781194276d9381963e91cb',
+      '0x292ed37c45d202799980884fb9c2f5f4bcef5f73cb781194276d9381963e91cb',
+      Math.floor(new Date().getTime() / 1000),
+      params.calls
+    ),
+  };
+
   return {
-    ...SwapRouter02.swapCallParameters(trade, {
-      recipient,
-      slippageTolerance,
-      deadlineOrPreviousBlockhash: deadline,
-      inputTokenPermit,
-    }),
+    ...methodParameters,
     to: SWAP_ROUTER_02_ADDRESS,
   };
 }

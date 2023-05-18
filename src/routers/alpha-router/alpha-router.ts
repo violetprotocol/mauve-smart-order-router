@@ -2,7 +2,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { BaseProvider, JsonRpcProvider } from '@ethersproject/providers';
 import DEFAULT_TOKEN_LIST from '@uniswap/default-token-list';
 import { TokenList } from '@uniswap/token-lists';
-import { Protocol, SwapRouter, Trade } from '@violetprotocol/mauve-router-sdk';
+import { Protocol } from '@violetprotocol/mauve-router-sdk';
 import {
   Currency,
   Fraction,
@@ -10,14 +10,8 @@ import {
   TradeType,
 } from '@violetprotocol/mauve-sdk-core';
 import { Pair } from '@violetprotocol/mauve-v2-sdk';
-import {
-  Pool,
-  Position,
-  SqrtPriceMath,
-  TickMath,
-} from '@violetprotocol/mauve-v3-sdk';
+import { Pool } from '@violetprotocol/mauve-v3-sdk';
 import retry from 'async-retry';
-import JSBI from 'jsbi';
 import _ from 'lodash';
 import NodeCache from 'node-cache';
 
@@ -79,7 +73,6 @@ import {
 } from '../../providers/v3/pool-provider';
 import { IV3SubgraphProvider } from '../../providers/v3/subgraph-provider';
 import { Erc20__factory } from '../../types/other/factories/Erc20__factory';
-import { SWAP_ROUTER_02_ADDRESS } from '../../util';
 import { CurrencyAmount } from '../../util/amounts';
 import {
   ChainId,
@@ -97,16 +90,10 @@ import { poolToString, routeToString } from '../../util/routes';
 import { UNSUPPORTED_TOKENS } from '../../util/unsupported-tokens';
 import {
   IRouter,
-  ISwapToRatio,
   MethodParameters,
   MixedRoute,
-  SwapAndAddConfig,
-  SwapAndAddOptions,
-  SwapAndAddParameters,
   SwapOptions,
   SwapRoute,
-  SwapToRatioResponse,
-  SwapToRatioStatus,
   V3Route,
 } from '../router';
 
@@ -121,7 +108,6 @@ import {
   V3RouteWithValidQuote,
 } from './entities/route-with-valid-quote';
 import { getBestSwapRoute } from './functions/best-swap-route';
-import { calculateRatioAmountIn } from './functions/calculate-ratio-amount-in';
 import {
   computeAllMixedRoutes,
   computeAllV2Routes,
@@ -340,11 +326,8 @@ export type AlphaRouterConfig = {
   distributionPercent: number;
 };
 
-export class AlphaRouter
-  implements
-    IRouter<AlphaRouterConfig>,
-    ISwapToRatio<AlphaRouterConfig, SwapAndAddConfig>
-{
+export class AlphaRouter implements IRouter<AlphaRouterConfig> {
+  // ,ISwapToRatio<AlphaRouterConfig, SwapAndAddConfig>
   protected chainId: ChainId;
   protected provider: BaseProvider;
   protected multicall2Provider: UniswapMulticallProvider;
@@ -642,194 +625,196 @@ export class AlphaRouter
     }
   }
 
-  public async routeToRatio(
-    token0Balance: CurrencyAmount,
-    token1Balance: CurrencyAmount,
-    position: Position,
-    swapAndAddConfig: SwapAndAddConfig,
-    swapAndAddOptions?: SwapAndAddOptions,
-    routingConfig: Partial<AlphaRouterConfig> = DEFAULT_ROUTING_CONFIG_BY_CHAIN(
-      this.chainId
-    )
-  ): Promise<SwapToRatioResponse> {
-    if (
-      token1Balance.currency.wrapped.sortsBefore(token0Balance.currency.wrapped)
-    ) {
-      [token0Balance, token1Balance] = [token1Balance, token0Balance];
-    }
+  // [MAUVE-DISABLED]: RouteToRatio primarily is used with mixed route or v2 pools which
+  //                    are unsupported in Mauve
+  // public async routeToRatio(
+  //   token0Balance: CurrencyAmount,
+  //   token1Balance: CurrencyAmount,
+  //   position: Position,
+  //   swapAndAddConfig: SwapAndAddConfig,
+  //   swapAndAddOptions?: SwapAndAddOptions,
+  //   routingConfig: Partial<AlphaRouterConfig> = DEFAULT_ROUTING_CONFIG_BY_CHAIN(
+  //     this.chainId
+  //   )
+  // ): Promise<SwapToRatioResponse> {
+  //   if (
+  //     token1Balance.currency.wrapped.sortsBefore(token0Balance.currency.wrapped)
+  //   ) {
+  //     [token0Balance, token1Balance] = [token1Balance, token0Balance];
+  //   }
 
-    let preSwapOptimalRatio = this.calculateOptimalRatio(
-      position,
-      position.pool.sqrtRatioX96,
-      true
-    );
-    // set up parameters according to which token will be swapped
-    let zeroForOne: boolean;
-    if (position.pool.tickCurrent > position.tickUpper) {
-      zeroForOne = true;
-    } else if (position.pool.tickCurrent < position.tickLower) {
-      zeroForOne = false;
-    } else {
-      zeroForOne = new Fraction(
-        token0Balance.quotient,
-        token1Balance.quotient
-      ).greaterThan(preSwapOptimalRatio);
-      if (!zeroForOne) preSwapOptimalRatio = preSwapOptimalRatio.invert();
-    }
+  //   let preSwapOptimalRatio = this.calculateOptimalRatio(
+  //     position,
+  //     position.pool.sqrtRatioX96,
+  //     true
+  //   );
+  //   // set up parameters according to which token will be swapped
+  //   let zeroForOne: boolean;
+  //   if (position.pool.tickCurrent > position.tickUpper) {
+  //     zeroForOne = true;
+  //   } else if (position.pool.tickCurrent < position.tickLower) {
+  //     zeroForOne = false;
+  //   } else {
+  //     zeroForOne = new Fraction(
+  //       token0Balance.quotient,
+  //       token1Balance.quotient
+  //     ).greaterThan(preSwapOptimalRatio);
+  //     if (!zeroForOne) preSwapOptimalRatio = preSwapOptimalRatio.invert();
+  //   }
 
-    const [inputBalance, outputBalance] = zeroForOne
-      ? [token0Balance, token1Balance]
-      : [token1Balance, token0Balance];
+  //   const [inputBalance, outputBalance] = zeroForOne
+  //     ? [token0Balance, token1Balance]
+  //     : [token1Balance, token0Balance];
 
-    let optimalRatio = preSwapOptimalRatio;
-    let postSwapTargetPool = position.pool;
-    let exchangeRate: Fraction = zeroForOne
-      ? position.pool.token0Price
-      : position.pool.token1Price;
-    let swap: SwapRoute | null = null;
-    let ratioAchieved = false;
-    let n = 0;
-    // iterate until we find a swap with a sufficient ratio or return null
-    while (!ratioAchieved) {
-      n++;
-      if (n > swapAndAddConfig.maxIterations) {
-        log.info('max iterations exceeded');
-        return {
-          status: SwapToRatioStatus.NO_ROUTE_FOUND,
-          error: 'max iterations exceeded',
-        };
-      }
+  //   let optimalRatio = preSwapOptimalRatio;
+  //   let postSwapTargetPool = position.pool;
+  //   let exchangeRate: Fraction = zeroForOne
+  //     ? position.pool.token0Price
+  //     : position.pool.token1Price;
+  //   let swap: SwapRoute | null = null;
+  //   let ratioAchieved = false;
+  //   let n = 0;
+  //   // iterate until we find a swap with a sufficient ratio or return null
+  //   while (!ratioAchieved) {
+  //     n++;
+  //     if (n > swapAndAddConfig.maxIterations) {
+  //       log.info('max iterations exceeded');
+  //       return {
+  //         status: SwapToRatioStatus.NO_ROUTE_FOUND,
+  //         error: 'max iterations exceeded',
+  //       };
+  //     }
 
-      const amountToSwap = calculateRatioAmountIn(
-        optimalRatio,
-        exchangeRate,
-        inputBalance,
-        outputBalance
-      );
-      if (amountToSwap.equalTo(0)) {
-        log.info(`no swap needed: amountToSwap = 0`);
-        return {
-          status: SwapToRatioStatus.NO_SWAP_NEEDED,
-        };
-      }
-      swap = await this.route(
-        amountToSwap,
-        outputBalance.currency,
-        TradeType.EXACT_INPUT,
-        undefined,
-        {
-          ...DEFAULT_ROUTING_CONFIG_BY_CHAIN(this.chainId),
-          ...routingConfig,
-          /// @dev We do not want to query for mixedRoutes for routeToRatio as they are not supported
-          /// [Protocol.V3, Protocol.V2] will make sure we only query for V3 and V2
-          // EDIT: Removed V2 as well for Mauve
-          protocols: [Protocol.V3],
-        }
-      );
-      if (!swap) {
-        log.info('no route found from this.route()');
-        return {
-          status: SwapToRatioStatus.NO_ROUTE_FOUND,
-          error: 'no route found',
-        };
-      }
+  //     const amountToSwap = calculateRatioAmountIn(
+  //       optimalRatio,
+  //       exchangeRate,
+  //       inputBalance,
+  //       outputBalance
+  //     );
+  //     if (amountToSwap.equalTo(0)) {
+  //       log.info(`no swap needed: amountToSwap = 0`);
+  //       return {
+  //         status: SwapToRatioStatus.NO_SWAP_NEEDED,
+  //       };
+  //     }
+  //     swap = await this.route(
+  //       amountToSwap,
+  //       outputBalance.currency,
+  //       TradeType.EXACT_INPUT,
+  //       undefined,
+  //       {
+  //         ...DEFAULT_ROUTING_CONFIG_BY_CHAIN(this.chainId),
+  //         ...routingConfig,
+  //         /// @dev We do not want to query for mixedRoutes for routeToRatio as they are not supported
+  //         /// [Protocol.V3, Protocol.V2] will make sure we only query for V3 and V2
+  //         // EDIT: Removed V2 as well for Mauve
+  //         protocols: [Protocol.V3],
+  //       }
+  //     );
+  //     if (!swap) {
+  //       log.info('no route found from this.route()');
+  //       return {
+  //         status: SwapToRatioStatus.NO_ROUTE_FOUND,
+  //         error: 'no route found',
+  //       };
+  //     }
 
-      const inputBalanceUpdated = inputBalance.subtract(
-        swap.trade!.inputAmount
-      );
-      const outputBalanceUpdated = outputBalance.add(swap.trade!.outputAmount);
-      const newRatio = inputBalanceUpdated.divide(outputBalanceUpdated);
+  //     const inputBalanceUpdated = inputBalance.subtract(
+  //       swap.trade!.inputAmount
+  //     );
+  //     const outputBalanceUpdated = outputBalance.add(swap.trade!.outputAmount);
+  //     const newRatio = inputBalanceUpdated.divide(outputBalanceUpdated);
 
-      let targetPoolPriceUpdate;
-      swap.route.forEach((route) => {
-        if (route.protocol == Protocol.V3) {
-          const v3Route = route as V3RouteWithValidQuote;
-          v3Route.route.pools.forEach((pool, i) => {
-            if (
-              pool.token0.equals(position.pool.token0) &&
-              pool.token1.equals(position.pool.token1) &&
-              pool.fee == position.pool.fee
-            ) {
-              targetPoolPriceUpdate = JSBI.BigInt(
-                v3Route.sqrtPriceX96AfterList[i]!.toString()
-              );
-              optimalRatio = this.calculateOptimalRatio(
-                position,
-                JSBI.BigInt(targetPoolPriceUpdate!.toString()),
-                zeroForOne
-              );
-            }
-          });
-        }
-      });
-      if (!targetPoolPriceUpdate) {
-        optimalRatio = preSwapOptimalRatio;
-      }
-      ratioAchieved =
-        newRatio.equalTo(optimalRatio) ||
-        this.absoluteValue(
-          newRatio.asFraction.divide(optimalRatio).subtract(1)
-        ).lessThan(swapAndAddConfig.ratioErrorTolerance);
+  //     let targetPoolPriceUpdate;
+  //     swap.route.forEach((route) => {
+  //       if (route.protocol == Protocol.V3) {
+  //         const v3Route = route as V3RouteWithValidQuote;
+  //         v3Route.route.pools.forEach((pool, i) => {
+  //           if (
+  //             pool.token0.equals(position.pool.token0) &&
+  //             pool.token1.equals(position.pool.token1) &&
+  //             pool.fee == position.pool.fee
+  //           ) {
+  //             targetPoolPriceUpdate = JSBI.BigInt(
+  //               v3Route.sqrtPriceX96AfterList[i]!.toString()
+  //             );
+  //             optimalRatio = this.calculateOptimalRatio(
+  //               position,
+  //               JSBI.BigInt(targetPoolPriceUpdate!.toString()),
+  //               zeroForOne
+  //             );
+  //           }
+  //         });
+  //       }
+  //     });
+  //     if (!targetPoolPriceUpdate) {
+  //       optimalRatio = preSwapOptimalRatio;
+  //     }
+  //     ratioAchieved =
+  //       newRatio.equalTo(optimalRatio) ||
+  //       this.absoluteValue(
+  //         newRatio.asFraction.divide(optimalRatio).subtract(1)
+  //       ).lessThan(swapAndAddConfig.ratioErrorTolerance);
 
-      if (ratioAchieved && targetPoolPriceUpdate) {
-        postSwapTargetPool = new Pool(
-          position.pool.token0,
-          position.pool.token1,
-          position.pool.fee,
-          targetPoolPriceUpdate,
-          position.pool.liquidity,
-          TickMath.getTickAtSqrtRatio(targetPoolPriceUpdate),
-          position.pool.tickDataProvider
-        );
-      }
-      exchangeRate = swap.trade!.outputAmount.divide(swap.trade!.inputAmount);
+  //     if (ratioAchieved && targetPoolPriceUpdate) {
+  //       postSwapTargetPool = new Pool(
+  //         position.pool.token0,
+  //         position.pool.token1,
+  //         position.pool.fee,
+  //         targetPoolPriceUpdate,
+  //         position.pool.liquidity,
+  //         TickMath.getTickAtSqrtRatio(targetPoolPriceUpdate),
+  //         position.pool.tickDataProvider
+  //       );
+  //     }
+  //     exchangeRate = swap.trade!.outputAmount.divide(swap.trade!.inputAmount);
 
-      log.info(
-        {
-          exchangeRate: exchangeRate.asFraction.toFixed(18),
-          optimalRatio: optimalRatio.asFraction.toFixed(18),
-          newRatio: newRatio.asFraction.toFixed(18),
-          inputBalanceUpdated: inputBalanceUpdated.asFraction.toFixed(18),
-          outputBalanceUpdated: outputBalanceUpdated.asFraction.toFixed(18),
-          ratioErrorTolerance: swapAndAddConfig.ratioErrorTolerance.toFixed(18),
-          iterationN: n.toString(),
-        },
-        'QuoteToRatio Iteration Parameters'
-      );
+  //     log.info(
+  //       {
+  //         exchangeRate: exchangeRate.asFraction.toFixed(18),
+  //         optimalRatio: optimalRatio.asFraction.toFixed(18),
+  //         newRatio: newRatio.asFraction.toFixed(18),
+  //         inputBalanceUpdated: inputBalanceUpdated.asFraction.toFixed(18),
+  //         outputBalanceUpdated: outputBalanceUpdated.asFraction.toFixed(18),
+  //         ratioErrorTolerance: swapAndAddConfig.ratioErrorTolerance.toFixed(18),
+  //         iterationN: n.toString(),
+  //       },
+  //       'QuoteToRatio Iteration Parameters'
+  //     );
 
-      if (exchangeRate.equalTo(0)) {
-        log.info('exchangeRate to 0');
-        return {
-          status: SwapToRatioStatus.NO_ROUTE_FOUND,
-          error: 'insufficient liquidity to swap to optimal ratio',
-        };
-      }
-    }
+  //     if (exchangeRate.equalTo(0)) {
+  //       log.info('exchangeRate to 0');
+  //       return {
+  //         status: SwapToRatioStatus.NO_ROUTE_FOUND,
+  //         error: 'insufficient liquidity to swap to optimal ratio',
+  //       };
+  //     }
+  //   }
 
-    if (!swap) {
-      return {
-        status: SwapToRatioStatus.NO_ROUTE_FOUND,
-        error: 'no route found',
-      };
-    }
-    let methodParameters: MethodParameters | undefined;
-    if (swapAndAddOptions) {
-      methodParameters = await this.buildSwapAndAddMethodParameters(
-        swap.trade,
-        swapAndAddOptions,
-        {
-          initialBalanceTokenIn: inputBalance,
-          initialBalanceTokenOut: outputBalance,
-          preLiquidityPosition: position,
-        }
-      );
-    }
+  //   if (!swap) {
+  //     return {
+  //       status: SwapToRatioStatus.NO_ROUTE_FOUND,
+  //       error: 'no route found',
+  //     };
+  //   }
+  //   let methodParameters: MethodParameters | undefined;
+  //   if (swapAndAddOptions) {
+  //     methodParameters = await this.buildSwapAndAddMethodParameters(
+  //       swap.trade,
+  //       swapAndAddOptions,
+  //       {
+  //         initialBalanceTokenIn: inputBalance,
+  //         initialBalanceTokenOut: outputBalance,
+  //         preLiquidityPosition: position,
+  //       }
+  //     );
+  //   }
 
-    return {
-      status: SwapToRatioStatus.SUCCESS,
-      result: { ...swap, methodParameters, optimalRatio, postSwapTargetPool },
-    };
-  }
+  //   return {
+  //     status: SwapToRatioStatus.SUCCESS,
+  //     result: { ...swap, methodParameters, optimalRatio, postSwapTargetPool },
+  //   };
+  // }
 
   /**
    * @inheritdoc IRouter
@@ -1137,7 +1122,7 @@ export class AlphaRouter
         // So we init a new CurrencyAmount object here
         CurrencyAmount.fromRawAmount(quoteCurrency, quote.quotient.toString()),
         this.l2GasDataProvider
-          ? await this.l2GasDataProvider!.getGasData()
+          ? await this.l2GasDataProvider.getGasData()
           : undefined,
         { blockNumber }
       );
@@ -1687,56 +1672,56 @@ export class AlphaRouter
     return [percents, amounts];
   }
 
-  private async buildSwapAndAddMethodParameters(
-    trade: Trade<Currency, Currency, TradeType>,
-    swapAndAddOptions: SwapAndAddOptions,
-    swapAndAddParameters: SwapAndAddParameters
-  ): Promise<MethodParameters> {
-    const {
-      swapOptions: { recipient, slippageTolerance, deadline, inputTokenPermit },
-      addLiquidityOptions: addLiquidityConfig,
-    } = swapAndAddOptions;
+  // private async buildSwapAndAddMethodParameters(
+  //   trade: Trade<Currency, Currency, TradeType>,
+  //   swapAndAddOptions: SwapAndAddOptions,
+  //   swapAndAddParameters: SwapAndAddParameters
+  // ): Promise<MethodParameters> {
+  //   const {
+  //     swapOptions: { recipient, slippageTolerance, deadline, inputTokenPermit },
+  //     addLiquidityOptions: addLiquidityConfig,
+  //   } = swapAndAddOptions;
 
-    const preLiquidityPosition = swapAndAddParameters.preLiquidityPosition;
-    const finalBalanceTokenIn =
-      swapAndAddParameters.initialBalanceTokenIn.subtract(trade.inputAmount);
-    const finalBalanceTokenOut =
-      swapAndAddParameters.initialBalanceTokenOut.add(trade.outputAmount);
-    const approvalTypes = await this.swapRouterProvider.getApprovalType(
-      finalBalanceTokenIn,
-      finalBalanceTokenOut
-    );
-    const zeroForOne = finalBalanceTokenIn.currency.wrapped.sortsBefore(
-      finalBalanceTokenOut.currency.wrapped
-    );
-    return {
-      ...SwapRouter.swapAndAddCallParameters(
-        trade,
-        {
-          recipient,
-          slippageTolerance,
-          deadlineOrPreviousBlockhash: deadline,
-          inputTokenPermit,
-        },
-        Position.fromAmounts({
-          pool: preLiquidityPosition.pool,
-          tickLower: preLiquidityPosition.tickLower,
-          tickUpper: preLiquidityPosition.tickUpper,
-          amount0: zeroForOne
-            ? finalBalanceTokenIn.quotient.toString()
-            : finalBalanceTokenOut.quotient.toString(),
-          amount1: zeroForOne
-            ? finalBalanceTokenOut.quotient.toString()
-            : finalBalanceTokenIn.quotient.toString(),
-          useFullPrecision: false,
-        }),
-        addLiquidityConfig,
-        approvalTypes.approvalTokenIn,
-        approvalTypes.approvalTokenOut
-      ),
-      to: SWAP_ROUTER_02_ADDRESS,
-    };
-  }
+  //   const preLiquidityPosition = swapAndAddParameters.preLiquidityPosition;
+  //   const finalBalanceTokenIn =
+  //     swapAndAddParameters.initialBalanceTokenIn.subtract(trade.inputAmount);
+  //   const finalBalanceTokenOut =
+  //     swapAndAddParameters.initialBalanceTokenOut.add(trade.outputAmount);
+  //   const approvalTypes = await this.swapRouterProvider.getApprovalType(
+  //     finalBalanceTokenIn,
+  //     finalBalanceTokenOut
+  //   );
+  //   const zeroForOne = finalBalanceTokenIn.currency.wrapped.sortsBefore(
+  //     finalBalanceTokenOut.currency.wrapped
+  //   );
+  //   return {
+  //     ...SwapRouter.swapAndAddCallParameters(
+  //       trade,
+  //       {
+  //         recipient,
+  //         slippageTolerance,
+  //         deadlineOrPreviousBlockhash: deadline,
+  //         inputTokenPermit,
+  //       },
+  //       Position.fromAmounts({
+  //         pool: preLiquidityPosition.pool,
+  //         tickLower: preLiquidityPosition.tickLower,
+  //         tickUpper: preLiquidityPosition.tickUpper,
+  //         amount0: zeroForOne
+  //           ? finalBalanceTokenIn.quotient.toString()
+  //           : finalBalanceTokenOut.quotient.toString(),
+  //         amount1: zeroForOne
+  //           ? finalBalanceTokenOut.quotient.toString()
+  //           : finalBalanceTokenIn.quotient.toString(),
+  //         useFullPrecision: false,
+  //       }),
+  //       addLiquidityConfig,
+  //       approvalTypes.approvalTokenIn,
+  //       approvalTypes.approvalTokenOut
+  //     ),
+  //     to: SWAP_ROUTER_02_ADDRESS,
+  //   };
+  // }
 
   private emitPoolSelectionMetrics(
     swapRouteRaw: {
@@ -1876,41 +1861,41 @@ export class AlphaRouter
     }
   }
 
-  private calculateOptimalRatio(
-    position: Position,
-    sqrtRatioX96: JSBI,
-    zeroForOne: boolean
-  ): Fraction {
-    const upperSqrtRatioX96 = TickMath.getSqrtRatioAtTick(position.tickUpper);
-    const lowerSqrtRatioX96 = TickMath.getSqrtRatioAtTick(position.tickLower);
+  // private calculateOptimalRatio(
+  //   position: Position,
+  //   sqrtRatioX96: JSBI,
+  //   zeroForOne: boolean
+  // ): Fraction {
+  //   const upperSqrtRatioX96 = TickMath.getSqrtRatioAtTick(position.tickUpper);
+  //   const lowerSqrtRatioX96 = TickMath.getSqrtRatioAtTick(position.tickLower);
 
-    // returns Fraction(0, 1) for any out of range position regardless of zeroForOne. Implication: function
-    // cannot be used to determine the trading direction of out of range positions.
-    if (
-      JSBI.greaterThan(sqrtRatioX96, upperSqrtRatioX96) ||
-      JSBI.lessThan(sqrtRatioX96, lowerSqrtRatioX96)
-    ) {
-      return new Fraction(0, 1);
-    }
+  //   // returns Fraction(0, 1) for any out of range position regardless of zeroForOne. Implication: function
+  //   // cannot be used to determine the trading direction of out of range positions.
+  //   if (
+  //     JSBI.greaterThan(sqrtRatioX96, upperSqrtRatioX96) ||
+  //     JSBI.lessThan(sqrtRatioX96, lowerSqrtRatioX96)
+  //   ) {
+  //     return new Fraction(0, 1);
+  //   }
 
-    const precision = JSBI.BigInt('1' + '0'.repeat(18));
-    let optimalRatio = new Fraction(
-      SqrtPriceMath.getAmount0Delta(
-        sqrtRatioX96,
-        upperSqrtRatioX96,
-        precision,
-        true
-      ),
-      SqrtPriceMath.getAmount1Delta(
-        sqrtRatioX96,
-        lowerSqrtRatioX96,
-        precision,
-        true
-      )
-    );
-    if (!zeroForOne) optimalRatio = optimalRatio.invert();
-    return optimalRatio;
-  }
+  //   const precision = JSBI.BigInt('1' + '0'.repeat(18));
+  //   let optimalRatio = new Fraction(
+  //     SqrtPriceMath.getAmount0Delta(
+  //       sqrtRatioX96,
+  //       upperSqrtRatioX96,
+  //       precision,
+  //       true
+  //     ),
+  //     SqrtPriceMath.getAmount1Delta(
+  //       sqrtRatioX96,
+  //       lowerSqrtRatioX96,
+  //       precision,
+  //       true
+  //     )
+  //   );
+  //   if (!zeroForOne) optimalRatio = optimalRatio.invert();
+  //   return optimalRatio;
+  // }
 
   public async userHasSufficientBalance(
     fromAddress: string,
@@ -1937,15 +1922,15 @@ export class AlphaRouter
     }
   }
 
-  private absoluteValue(fraction: Fraction): Fraction {
-    const numeratorAbs = JSBI.lessThan(fraction.numerator, JSBI.BigInt(0))
-      ? JSBI.unaryMinus(fraction.numerator)
-      : fraction.numerator;
-    const denominatorAbs = JSBI.lessThan(fraction.denominator, JSBI.BigInt(0))
-      ? JSBI.unaryMinus(fraction.denominator)
-      : fraction.denominator;
-    return new Fraction(numeratorAbs, denominatorAbs);
-  }
+  // private absoluteValue(fraction: Fraction): Fraction {
+  //   const numeratorAbs = JSBI.lessThan(fraction.numerator, JSBI.BigInt(0))
+  //     ? JSBI.unaryMinus(fraction.numerator)
+  //     : fraction.numerator;
+  //   const denominatorAbs = JSBI.lessThan(fraction.denominator, JSBI.BigInt(0))
+  //     ? JSBI.unaryMinus(fraction.denominator)
+  //     : fraction.denominator;
+  //   return new Fraction(numeratorAbs, denominatorAbs);
+  // }
 
   private getBlockNumberPromise(): number | Promise<number> {
     return retry(

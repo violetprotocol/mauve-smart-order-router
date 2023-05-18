@@ -3,14 +3,15 @@ import { Logger } from '@ethersproject/logger';
 import { SwapRouter, Trade } from '@violetprotocol/mauve-router-sdk';
 import { Currency, Token, TradeType } from '@violetprotocol/mauve-sdk-core';
 import {
+  EATMulticall,
   FeeAmount,
   MethodParameters,
   Pool,
   Route,
 } from '@violetprotocol/mauve-v3-sdk';
 import _ from 'lodash';
-import { IOnChainQuoteProvider, RouteWithQuotes } from '../../providers';
 
+import { IOnChainQuoteProvider, RouteWithQuotes } from '../../providers';
 import { IMulticallProvider } from '../../providers/multicall-provider';
 import {
   DAI_MAINNET,
@@ -137,7 +138,7 @@ export class LegacyRouter {
         1
       ),
       estimatedGasUsedUSD: CurrencyAmount.fromFractionalAmount(
-        DAI_MAINNET!,
+        DAI_MAINNET,
         0,
         1
       ),
@@ -511,7 +512,6 @@ export class LegacyRouter {
             outputAmount: quoteCurrency,
           },
         ],
-        v2Routes: [],
         tradeType: tradeType,
       });
     } else {
@@ -541,7 +541,6 @@ export class LegacyRouter {
             outputAmount: amountCurrency,
           },
         ],
-        v2Routes: [],
         tradeType: tradeType,
       });
     }
@@ -553,7 +552,7 @@ export class LegacyRouter {
   ): MethodParameters {
     const { recipient, slippageTolerance, deadline } = swapConfig;
 
-    const methodParameters = SwapRouter.swapCallParameters(trade, {
+    const params = SwapRouter.swapCallParameters(trade, {
       recipient,
       slippageTolerance,
       deadlineOrPreviousBlockhash: deadline,
@@ -579,6 +578,19 @@ export class LegacyRouter {
       //   : {}),
     });
 
-    return methodParameters;
+    const methodParameters = {
+      ...params,
+      calldata: EATMulticall.encodePostsignMulticall(
+        1,
+        '0x292ed37c45d202799980884fb9c2f5f4bcef5f73cb781194276d9381963e91cb',
+        '0x292ed37c45d202799980884fb9c2f5f4bcef5f73cb781194276d9381963e91cb',
+        Math.floor(new Date().getTime() / 1000),
+        params.calls
+      ),
+    };
+
+    return {
+      ...methodParameters,
+    };
   }
 }

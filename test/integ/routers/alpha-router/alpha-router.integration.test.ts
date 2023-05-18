@@ -32,6 +32,8 @@ import {
   NATIVE_CURRENCY,
   NodeJSCache,
   OnChainQuoteProvider,
+  OUT1_OPTIMISM_GOERLI,
+  OUT2_OPTIMISM_GOERLI,
   parseAmount,
   setGlobalLogger,
   SimulationStatus,
@@ -56,11 +58,10 @@ import {
   WBTC_MOONBEAM,
   WETH9,
   WNATIVE_ON,
-  OUT1_OPTIMISM_GOERLI,
-  OUT2_OPTIMISM_GOERLI,
 } from '../../../../src';
 import { WHALES } from '../../../test-util/whales';
 
+import bunyan from 'bunyan';
 import 'jest-environment-hardhat';
 
 import { JsonRpcProvider, JsonRpcSigner } from '@ethersproject/providers';
@@ -71,7 +72,6 @@ import {
   FeeAmount,
   Pool,
 } from '@violetprotocol/mauve-v3-sdk';
-import bunyan from 'bunyan';
 import { BigNumber, providers } from 'ethers';
 import { parseEther } from 'ethers/lib/utils';
 import _ from 'lodash';
@@ -134,7 +134,7 @@ const isTenderlyEnvironmentSet = (): boolean => {
 if (process.env.INTEG_TEST_DEBUG) {
   setGlobalLogger(
     bunyan.createLogger({
-      name: 'Uniswap Smart Order Router',
+      name: 'Mauve Smart Order Router',
       serializers: bunyan.stdSerializers,
       level: bunyan.DEBUG,
     })
@@ -1951,8 +1951,8 @@ describe('quote for other networks', () => {
             const tokenOut = erc1;
             const amount =
               tradeType == TradeType.EXACT_INPUT
-                ? parseAmount('10', tokenIn)
-                : parseAmount('10', tokenOut);
+                ? parseAmount('1', tokenIn)
+                : parseAmount('1', tokenOut);
 
             const swap = await alphaRouter.route(
               amount,
@@ -2004,13 +2004,9 @@ describe('quote for other networks', () => {
             // large input amounts
             // TODO: Simplify this when Celo has more liquidity
             const amount =
-              chain == ChainId.CELO || chain == ChainId.CELO_ALFAJORES
-                ? tradeType == TradeType.EXACT_INPUT
-                  ? parseAmount('10', tokenIn)
-                  : parseAmount('10', tokenOut)
-                : tradeType == TradeType.EXACT_INPUT
-                ? parseAmount('100', tokenIn)
-                : parseAmount('100', tokenOut);
+              tradeType == TradeType.EXACT_INPUT
+                ? parseAmount('1', tokenIn)
+                : parseAmount('1', tokenOut);
 
             const swap = await alphaRouter.route(
               amount,
@@ -2020,7 +2016,7 @@ describe('quote for other networks', () => {
               {
                 // @ts-ignore[TS7053] - complaining about switch being non exhaustive
                 ...DEFAULT_ROUTING_CONFIG_BY_CHAIN[chain],
-                protocols: [Protocol.V3, Protocol.V2],
+                protocols: [Protocol.V3],
               }
             );
             expect(swap).toBeDefined();
@@ -2120,8 +2116,8 @@ describe('quote for other networks', () => {
               const tokenOut = erc1;
               const amount =
                 tradeType == TradeType.EXACT_INPUT
-                  ? parseAmount('10', tokenIn)
-                  : parseAmount('10', tokenOut);
+                  ? parseAmount('1', tokenIn)
+                  : parseAmount('1', tokenOut);
 
               // Universal Router is not deployed on Gorli.
               const swapOptions: SwapOptions =

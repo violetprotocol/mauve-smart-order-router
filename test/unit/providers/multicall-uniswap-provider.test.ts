@@ -76,7 +76,6 @@ describe.skip('uniswap multicall provider', () => {
           functionName: 'decimals',
         });
 
-      console.log({ result }, 'Result');
       expect(multicallMock).toHaveBeenCalledTimes(1);
       mockProvider;
     });
