@@ -35,6 +35,7 @@ import {
   OUT1_OPTIMISM_GOERLI,
   OUT2_OPTIMISM_GOERLI,
   parseAmount,
+  setGlobalLogger,
   SimulationStatus,
   StaticGasPriceProvider,
   SUPPORTED_CHAINS,
@@ -120,21 +121,24 @@ const isTenderlyEnvironmentSet = (): boolean => {
     !!process.env.TENDERLY_PROJECT &&
     !!process.env.TENDERLY_ACCESS_KEY;
   if (!isSet && !warnedTenderly) {
+    console.log(
+      'Skipping Tenderly Simulation Tests since env variables for TENDERLY_BASE_URL, TENDERLY_USER, TENDERLY_PROJECT and TENDERLY_ACCESS_KEY are not set.'
+    );
     warnedTenderly = true;
   }
   return isSet;
 };
 
 // Flag for enabling logs for debugging integ tests
-// if (process.env.INTEG_TEST_DEBUG) {
-//   setGlobalLogger(
-//     bunyan.createLogger({
-//       name: 'Mauve Smart Order Router',
-//       serializers: bunyan.stdSerializers,
-//       level: bunyan.DEBUG,
-//     })
-//   );
-// }
+if (process.env.INTEG_TEST_DEBUG) {
+  setGlobalLogger(
+    bunyan.createLogger({
+      name: 'Mauve Smart Order Router',
+      serializers: bunyan.stdSerializers,
+      level: bunyan.DEBUG,
+    })
+  );
+}
 
 jest.retryTimes(0);
 
