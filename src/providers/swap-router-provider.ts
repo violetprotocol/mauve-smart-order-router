@@ -70,8 +70,8 @@ export class SwapRouterProvider implements ISwapRouterProvider {
       );
     }
 
-    const { result: approvalTokenIn } = tx.results![0];
-    const { result: approvalTokenOut } = tx.results![1];
+    const { result: approvalTokenIn } = tx.results[0];
+    const { result: approvalTokenOut } = tx.results[1];
 
     return {
       approvalTokenIn: approvalTokenIn[0],

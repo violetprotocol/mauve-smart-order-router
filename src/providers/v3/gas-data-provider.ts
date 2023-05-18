@@ -84,10 +84,10 @@ export class OptimismGasDataProvider
       );
     }
 
-    const { result: l1BaseFee } = tx.results![0];
-    const { result: scalar } = tx.results![1];
-    const { result: decimals } = tx.results![2];
-    const { result: overhead } = tx.results![3];
+    const { result: l1BaseFee } = tx.results[0];
+    const { result: scalar } = tx.results[1];
+    const { result: decimals } = tx.results[2];
+    const { result: overhead } = tx.results[3];
 
     return {
       l1BaseFee: l1BaseFee[0],
