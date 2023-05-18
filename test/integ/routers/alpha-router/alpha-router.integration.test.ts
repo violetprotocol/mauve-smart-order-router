@@ -120,9 +120,6 @@ const isTenderlyEnvironmentSet = (): boolean => {
     !!process.env.TENDERLY_PROJECT &&
     !!process.env.TENDERLY_ACCESS_KEY;
   if (!isSet && !warnedTenderly) {
-    console.log(
-      'Skipping Tenderly Simulation Tests since env variables for TENDERLY_BASE_URL, TENDERLY_USER, TENDERLY_PROJECT and TENDERLY_ACCESS_KEY are not set.'
-    );
     warnedTenderly = true;
   }
   return isSet;
@@ -1888,8 +1885,6 @@ describe('quote for other networks', () => {
     for (const tradeType of [TradeType.EXACT_INPUT, TradeType.EXACT_OUTPUT]) {
       const erc1 = TEST_ERC20_1[chain];
       const erc2 = TEST_ERC20_2[chain];
-
-      console.log(tradeType);
 
       describe(`${ID_TO_NETWORK_NAME(chain)} ${tradeType} 2xx`, function () {
         const wrappedNative = WNATIVE_ON(chain);

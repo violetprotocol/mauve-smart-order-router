@@ -158,8 +158,6 @@ export class UniswapMulticallProvider extends IMulticallProvider<UniswapMultical
       additionalConfig?.gasLimitPerCallOverride ?? this.gasLimitPerCall;
     const blockNumberOverride = providerConfig?.blockNumber ?? undefined;
 
-    console.log(fragment.name);
-    console.log(functionParams);
     const calls = _.map(functionParams, (functionParam) => {
       const callData = contractInterface.encodeFunctionData(
         fragment,
