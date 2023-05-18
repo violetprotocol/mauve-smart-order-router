@@ -1120,7 +1120,7 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
         // So we init a new CurrencyAmount object here
         CurrencyAmount.fromRawAmount(quoteCurrency, quote.quotient.toString()),
         this.l2GasDataProvider
-          ? await this.l2GasDataProvider!.getGasData()
+          ? await this.l2GasDataProvider.getGasData()
           : undefined,
         { blockNumber }
       );

@@ -4,9 +4,10 @@ import { Pair } from '@violetprotocol/mauve-v2-sdk';
 import { Pool } from '@violetprotocol/mauve-v3-sdk';
 import _ from 'lodash';
 
-import { CurrencyAmount, V3_CORE_FACTORY_ADDRESSES } from '.';
 import { RouteWithValidQuote } from '../routers/alpha-router';
 import { MixedRoute, V2Route, V3Route } from '../routers/router';
+
+import { CurrencyAmount, V3_CORE_FACTORY_ADDRESSES } from '.';
 
 export const routeToString = (
   route: V3Route | V2Route | MixedRoute
@@ -33,8 +34,8 @@ export const routeToString = (
             pool.chainId ? V3_CORE_FACTORY_ADDRESSES[pool.chainId] : undefined
           )}]`
         : ` -- [${Pair.getAddress(
-            (pool as Pair).token0,
-            (pool as Pair).token1
+            (pool ).token0,
+            (pool ).token1
           )}]`
     } --> `;
   });

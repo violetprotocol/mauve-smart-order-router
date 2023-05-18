@@ -10,8 +10,8 @@ import {
   Route,
 } from '@violetprotocol/mauve-v3-sdk';
 import _ from 'lodash';
-import { IOnChainQuoteProvider, RouteWithQuotes } from '../../providers';
 
+import { IOnChainQuoteProvider, RouteWithQuotes } from '../../providers';
 import { IMulticallProvider } from '../../providers/multicall-provider';
 import {
   DAI_MAINNET,
@@ -138,7 +138,7 @@ export class LegacyRouter {
         1
       ),
       estimatedGasUsedUSD: CurrencyAmount.fromFractionalAmount(
-        DAI_MAINNET!,
+        DAI_MAINNET,
         0,
         1
       ),

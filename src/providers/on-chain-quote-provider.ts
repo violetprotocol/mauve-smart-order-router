@@ -11,7 +11,6 @@ import _ from 'lodash';
 import stats from 'stats-lite';
 
 import { MixedRoute, V2Route, V3Route } from '../routers/router';
-import { IMixedRouteQuoterV1__factory } from '../types/other/factories/IMixedRouteQuoterV1__factory';
 import { IQuoterV2__factory } from '../types/v3/factories/IQuoterV2__factory';
 import { ChainId, metric, MetricLoggerUnit } from '../util';
 import {
@@ -21,6 +20,7 @@ import {
 import { CurrencyAmount } from '../util/amounts';
 import { log } from '../util/log';
 import { routeToString } from '../util/routes';
+
 import { Result } from './multicall-provider';
 import { UniswapMulticallProvider } from './multicall-uniswap-provider';
 import { ProviderConfig } from './provider';
@@ -467,9 +467,7 @@ export class OnChainQuoteProvider implements IOnChainQuoteProvider {
                     [BigNumber, BigNumber[], number[], BigNumber] // amountIn/amountOut, sqrtPriceX96AfterList, initializedTicksCrossedList, gasEstimate
                   >({
                     address: this.getQuoterAddress(useMixedRouteQuoter),
-                    contractInterface: useMixedRouteQuoter
-                      ? IMixedRouteQuoterV1__factory.createInterface()
-                      : IQuoterV2__factory.createInterface(),
+                    contractInterface: IQuoterV2__factory.createInterface(),
                     functionName,
                     functionParams: inputs,
                     providerConfig,

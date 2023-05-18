@@ -14,9 +14,9 @@ import {
   CurrencyAmount,
   MethodParameters,
   RouteWithValidQuote,
+  SWAP_ROUTER_02_ADDRESS,
   SwapOptions,
   SwapType,
-  SWAP_ROUTER_02_ADDRESS,
   V3RouteWithValidQuote,
 } from '..';
 
