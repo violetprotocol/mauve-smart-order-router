@@ -335,7 +335,6 @@ export abstract class BaseCommand extends Command {
         simulator,
       });
 
-      this._swapToRatioRouter = router;
       this._router = router;
     }
   }
