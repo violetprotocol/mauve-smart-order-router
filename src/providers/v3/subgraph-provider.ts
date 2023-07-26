@@ -57,8 +57,8 @@ const SUBGRAPH_URL_BY_CHAIN: { [chainId in ChainId]?: string } = {
     'https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-polygon',
   [ChainId.CELO]:
     'https://api.thegraph.com/subgraphs/name/jesse-sawa/uniswap-celo',
-  [ChainId.GOERLI]:
-    'https://api.thegraph.com/subgraphs/name/violetprotocol/phlox-subgraph',
+  [ChainId.OPTIMISM_GOERLI]:
+    'https://api.thegraph.com/subgraphs/name/violetprotocol/mauve-subgraph',
 };
 
 const PAGE_SIZE = 1000; // 1k is max possible query size from subgraph.
