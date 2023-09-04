@@ -61,7 +61,12 @@ export async function getHighestLiquidityV3NativePool(
 ): Promise<Pool | null> {
   const nativeCurrency = WRAPPED_NATIVE_CURRENCY[token.chainId as ChainId]!;
 
-  const nativePools = _([FeeAmount.HIGH, FeeAmount.MEDIUM, FeeAmount.LOW])
+  const nativePools = _([
+    FeeAmount.HIGH,
+    FeeAmount.MEDIUM,
+    FeeAmount.LOW,
+    FeeAmount.LOWER,
+  ])
     .map<[Token, Token, FeeAmount]>((feeAmount) => {
       return [nativeCurrency, token, feeAmount];
     })
@@ -69,7 +74,12 @@ export async function getHighestLiquidityV3NativePool(
 
   const poolAccessor = await poolProvider.getPools(nativePools);
 
-  const pools = _([FeeAmount.HIGH, FeeAmount.MEDIUM, FeeAmount.LOW])
+  const pools = _([
+    FeeAmount.HIGH,
+    FeeAmount.MEDIUM,
+    FeeAmount.LOW,
+    FeeAmount.LOWER,
+  ])
     .map((feeAmount) => {
       return poolAccessor.getPool(nativeCurrency, token, feeAmount);
     })
@@ -107,6 +117,7 @@ export async function getHighestLiquidityV3USDPool(
     FeeAmount.HIGH,
     FeeAmount.MEDIUM,
     FeeAmount.LOW,
+    FeeAmount.LOWER,
     FeeAmount.LOWEST,
   ])
     .flatMap((feeAmount) => {
@@ -124,6 +135,7 @@ export async function getHighestLiquidityV3USDPool(
     FeeAmount.HIGH,
     FeeAmount.MEDIUM,
     FeeAmount.LOW,
+    FeeAmount.LOWER,
     FeeAmount.LOWEST,
   ])
     .flatMap((feeAmount) => {
