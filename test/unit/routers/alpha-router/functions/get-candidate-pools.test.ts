@@ -230,6 +230,7 @@ describe('get candidate pools', () => {
         [DAI, WRAPPED_NATIVE_CURRENCY[1]!, FeeAmount.HIGH],
         [DAI, WRAPPED_NATIVE_CURRENCY[1]!, FeeAmount.MEDIUM],
         [DAI, WRAPPED_NATIVE_CURRENCY[1]!, FeeAmount.LOW],
+        [DAI, WRAPPED_NATIVE_CURRENCY[1]!, FeeAmount.LOWER],
         [DAI, WRAPPED_NATIVE_CURRENCY[1]!, FeeAmount.LOWEST],
       ])
     ).toBeTruthy();
