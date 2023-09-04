@@ -46,7 +46,7 @@ export const printV2SubgraphPool = (s: V2SubgraphPool) =>
 
 const SUBGRAPH_URL_BY_CHAIN: { [chainId in ChainId]?: string } = {
   [ChainId.MAINNET]:
-    'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3',
+    'https://api.thegraph.com/subgraphs/name/violetprotocol/mauve-subgraph',
   [ChainId.RINKEBY]:
     'https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-rinkeby',
   [ChainId.OPTIMISM]:
