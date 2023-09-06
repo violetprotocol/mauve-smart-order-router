@@ -476,7 +476,7 @@ describe('alpha router integration', () => {
    */
   for (const tradeType of [TradeType.EXACT_INPUT, TradeType.EXACT_OUTPUT]) {
     // TODO-MAUVE: Restore these tests once Mauve is deployed on Mainnet
-    describe.skip(`${ID_TO_NETWORK_NAME(1)} alpha - ${tradeType}`, () => {
+    describe(`${ID_TO_NETWORK_NAME(1)} alpha - ${tradeType}`, () => {
       describe.skip(`+ Execute on Hardhat Fork`, () => {
         it('erc20 -> erc20', async () => {
           // declaring these to reduce confusion
@@ -1883,9 +1883,7 @@ describe('quote for other networks', () => {
       c != ChainId.ARBITRUM_GOERLI &&
       c != ChainId.OPTIMISM && /// @dev infura has been having issues with optimism lately
       // Tests are failing https://github.com/Uniswap/smart-order-router/issues/104
-      c != ChainId.CELO_ALFAJORES &&
-      // Re-enable MAINNET once deployed on there
-      c != ChainId.MAINNET
+      c != ChainId.CELO_ALFAJORES
   )) {
     for (const tradeType of [TradeType.EXACT_INPUT, TradeType.EXACT_OUTPUT]) {
       const erc1 = TEST_ERC20_1[chain];

@@ -62,7 +62,6 @@ export const HAS_L1_FEE = [
 ];
 
 export const NETWORKS_WITH_SAME_UNISWAP_ADDRESSES = [
-  ChainId.MAINNET,
   ChainId.ROPSTEN,
   ChainId.RINKEBY,
   ChainId.GOERLI,
@@ -272,9 +271,7 @@ export const ID_TO_NETWORK_NAME = (id: number): ChainName => {
   }
 };
 
-export const CHAIN_IDS_LIST = Object.values(ChainId).map((c) =>
-  c.toString()
-) ;
+export const CHAIN_IDS_LIST = Object.values(ChainId).map((c) => c.toString());
 
 export const ID_TO_PROVIDER = (id: ChainId): string => {
   switch (id) {
