@@ -21,7 +21,6 @@ import {
   CachingV2PoolProvider,
   CachingV2SubgraphProvider,
   CachingV3PoolProvider,
-  CachingV3SubgraphProvider,
   EIP1559GasPriceProvider,
   ETHGasStationInfoProvider,
   IOnChainQuoteProvider,
@@ -34,13 +33,11 @@ import {
   OnChainQuoteProvider,
   Simulator,
   StaticV2SubgraphProvider,
-  StaticV3SubgraphProvider,
   SwapRouterProvider,
   UniswapMulticallProvider,
   URISubgraphProvider,
   V2QuoteProvider,
   V2SubgraphProviderWithFallBacks,
-  V3SubgraphProviderWithFallBacks,
 } from '../../providers';
 import {
   CachingTokenListProvider,
@@ -71,7 +68,10 @@ import {
   IV3PoolProvider,
   V3PoolProvider,
 } from '../../providers/v3/pool-provider';
-import { IV3SubgraphProvider } from '../../providers/v3/subgraph-provider';
+import {
+  IV3SubgraphProvider,
+  V3SubgraphProvider,
+} from '../../providers/v3/subgraph-provider';
 import { Erc20__factory } from '../../types/other/factories/Erc20__factory';
 import { CurrencyAmount } from '../../util/amounts';
 import {
@@ -556,19 +556,20 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
     if (v3SubgraphProvider) {
       this.v3SubgraphProvider = v3SubgraphProvider;
     } else {
-      this.v3SubgraphProvider = new V3SubgraphProviderWithFallBacks([
-        new CachingV3SubgraphProvider(
-          chainId,
-          new URISubgraphProvider(
-            chainId,
-            `https://cloudflare-ipfs.com/ipns/api.uniswap.org/v1/pools/v3/${chainName}.json`,
-            undefined,
-            0
-          ),
-          new NodeJSCache(new NodeCache({ stdTTL: 300, useClones: false }))
-        ),
-        new StaticV3SubgraphProvider(chainId, this.v3PoolProvider),
-      ]);
+      this.v3SubgraphProvider = new V3SubgraphProvider(chainId);
+      // this.v3SubgraphProvider = new V3SubgraphProviderWithFallBacks([
+      //   new CachingV3SubgraphProvider(
+      //     chainId,
+      //     new URISubgraphProvider(
+      //       chainId,
+      //       `https://cloudflare-ipfs.com/ipns/api.uniswap.org/v1/pools/v3/${chainName}.json`,
+      //       undefined,
+      //       0
+      //     ),
+      //     new NodeJSCache(new NodeCache({ stdTTL: 300, useClones: false }))
+      //   ),
+      //   new StaticV3SubgraphProvider(chainId, this.v3PoolProvider),
+      // ]);
     }
 
     this.gasPriceProvider =

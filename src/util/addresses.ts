@@ -1,5 +1,4 @@
 import { Token } from '@violetprotocol/mauve-sdk-core';
-import { FACTORY_ADDRESS } from '@violetprotocol/mauve-v3-sdk';
 
 import { ChainId, NETWORKS_WITH_SAME_UNISWAP_ADDRESSES } from './chains';
 
@@ -25,7 +24,7 @@ const MAINNET_MAUVE_MULTICALL_ADDRESS =
   '0xDB98e266D090b1A6538d56459CbEE0fE0f38d879';
 
 export const V3_CORE_FACTORY_ADDRESSES: AddressMap = {
-  ...constructSameAddressMap(FACTORY_ADDRESS),
+  ...constructSameAddressMap(MAINNET_FACTORY_ADDRESS),
   // [ChainId.CELO]: CELO_V3_CORE_FACTORY_ADDRESSES,
   // [ChainId.CELO_ALFAJORES]: CELO_V3_CORE_FACTORY_ADDRESSES,
 
@@ -38,7 +37,7 @@ export const V3_CORE_FACTORY_ADDRESSES: AddressMap = {
 };
 
 export const QUOTER_V2_ADDRESSES: AddressMap = {
-  ...constructSameAddressMap('0x61fFE014bA17989E743c5F6cB21bF9697530B21e'),
+  ...constructSameAddressMap(MAINNET_QUOTER_V2),
   // [ChainId.CELO]: CELO_QUOTER_ADDRESSES,
   // [ChainId.CELO_ALFAJORES]: CELO_QUOTER_ADDRESSES,
 
@@ -60,7 +59,7 @@ export const MIXED_ROUTE_QUOTER_V1_ADDRESSES: AddressMap = {
 };
 
 export const UNISWAP_MULTICALL_ADDRESSES: AddressMap = {
-  ...constructSameAddressMap('0x1F98415757620B543A52E61c46B32eB19261F984'),
+  ...constructSameAddressMap(MAINNET_MAUVE_MULTICALL_ADDRESS),
   // [ChainId.CELO]: CELO_MULTICALL_ADDRESS,
   // [ChainId.CELO_ALFAJORES]: CELO_MULTICALL_ADDRESS,
 
