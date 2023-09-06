@@ -556,7 +556,7 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
     if (v3SubgraphProvider) {
       this.v3SubgraphProvider = v3SubgraphProvider;
     } else {
-      this.v3SubgraphProvider = new V3SubgraphProvider(ChainId.MAINNET);
+      this.v3SubgraphProvider = new V3SubgraphProvider(chainId);
       // this.v3SubgraphProvider = new V3SubgraphProviderWithFallBacks([
       //   new CachingV3SubgraphProvider(
       //     chainId,
