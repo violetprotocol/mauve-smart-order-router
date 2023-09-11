@@ -82,7 +82,7 @@ export class V3SubgraphProvider implements IV3SubgraphProvider {
 
   constructor(
     private chainId: ChainId,
-    private retries = 2,
+    private retries = 5,
     private timeout = 30000,
     private rollback = true
   ) {

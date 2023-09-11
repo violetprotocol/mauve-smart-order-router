@@ -398,7 +398,7 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
             provider,
             this.multicall2Provider,
             {
-              retries: 2,
+              retries: 5,
               minTimeout: 100,
               maxTimeout: 1000,
             },
@@ -1942,7 +1942,7 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
         return this.provider.getBlockNumber();
       },
       {
-        retries: 2,
+        retries: 5,
         minTimeout: 100,
         maxTimeout: 1000,
       }
