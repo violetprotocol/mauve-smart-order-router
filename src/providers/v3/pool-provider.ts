@@ -89,7 +89,7 @@ export class V3PoolProvider implements IV3PoolProvider {
     protected chainId: ChainId,
     protected multicall2Provider: IMulticallProvider,
     protected retryOptions: V3PoolRetryOptions = {
-      retries: 2,
+      retries: 5,
       minTimeout: 50,
       maxTimeout: 500,
     }
