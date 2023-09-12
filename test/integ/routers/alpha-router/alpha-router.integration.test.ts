@@ -1882,7 +1882,6 @@ describe('quote for other networks', () => {
       c != ChainId.ARBITRUM_RINKEBY &&
       c != ChainId.ARBITRUM_GOERLI &&
       c != ChainId.OPTIMISM && /// @dev infura has been having issues with optimism lately
-      // Tests are failing https://github.com/Uniswap/smart-order-router/issues/104
       c != ChainId.CELO_ALFAJORES
   )) {
     for (const tradeType of [TradeType.EXACT_INPUT, TradeType.EXACT_OUTPUT]) {

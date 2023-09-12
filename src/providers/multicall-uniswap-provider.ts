@@ -22,7 +22,7 @@ export type UniswapMulticallConfig = {
 };
 
 /**
- * The UniswapMulticall contract has added functionality for limiting the amount of gas
+ * The Multicall contract has added functionality for limiting the amount of gas
  * that each call within the multicall can consume. This is useful for operations where
  * a call could consume such a large amount of gas that it causes the node to error out
  * with an out of gas error.
@@ -43,7 +43,7 @@ export class UniswapMulticallProvider extends IMulticallProvider<UniswapMultical
 
     if (!multicallAddress) {
       throw new Error(
-        `No address for Uniswap Multicall Contract on chain id: ${chainId}`
+        `No address for Multicall Contract on chain id: ${chainId}`
       );
     }
 

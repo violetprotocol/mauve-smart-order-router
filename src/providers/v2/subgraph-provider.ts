@@ -195,7 +195,6 @@ export class V2SubgraphProvider implements IV2SubgraphProvider {
 
     // Filter pools that have tracked reserve ETH less than threshold.
     // trackedReserveETH filters pools that do not involve a pool from this allowlist:
-    // https://github.com/Uniswap/v2-subgraph/blob/7c82235cad7aee4cfce8ea82f0030af3d224833e/src/mappings/pricing.ts#L43
     // Which helps filter pools with manipulated prices/liquidity.
 
     // TODO: Remove. Temporary fix to ensure tokens without trackedReserveETH are in the list.
