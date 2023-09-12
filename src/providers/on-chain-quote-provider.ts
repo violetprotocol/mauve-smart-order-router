@@ -254,7 +254,7 @@ export class OnChainQuoteProvider implements IOnChainQuoteProvider {
    * @param chainId The chain to get quotes for.
    * @param provider The web 3 provider.
    * @param multicall2Provider The multicall provider to use to get the quotes on-chain.
-   * Only supports the Uniswap Multicall contract as it needs the gas limitting functionality.
+   * Only supports the Multicall contract as it needs the gas limitting functionality.
    * @param retryOptions The retry options for each call to the multicall.
    * @param batchParams The parameters for each batched call to the multicall.
    * @param gasErrorFailureOverride The gas and chunk parameters to use when retrying a batch that failed due to out of gas.
@@ -265,7 +265,7 @@ export class OnChainQuoteProvider implements IOnChainQuoteProvider {
   constructor(
     protected chainId: ChainId,
     protected provider: BaseProvider,
-    // Only supports Uniswap Multicall as it needs the gas limitting functionality.
+    // Only supports Multicall as it needs the gas limitting functionality.
     protected multicall2Provider: UniswapMulticallProvider,
     protected retryOptions: QuoteRetryOptions = {
       retries: DEFAULT_BATCH_RETRIES,

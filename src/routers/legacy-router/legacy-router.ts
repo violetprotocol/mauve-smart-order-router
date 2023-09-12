@@ -50,8 +50,6 @@ export type LegacyRoutingConfig = {
 
 /**
  * Replicates the router implemented in the V3 interface.
- * Code is mostly a copy from https://github.com/Uniswap/uniswap-interface/blob/0190b5a408c13016c87e1030ffc59326c085f389/src/hooks/useBestV3Trade.ts#L22-L23
- * with React/Redux hooks removed, and refactoring to allow re-use in other routers.
  */
 export class LegacyRouter {
   protected chainId: ChainId;

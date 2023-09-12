@@ -196,7 +196,7 @@ export type AlphaRouterParams = {
   mixedRouteGasModelFactory?: IOnChainGasModelFactory;
   /**
    * A token list that specifies Token that should be blocked from routing through.
-   * Defaults to Uniswap's unsupported token list.
+   * Defaults to unsupported token list.
    */
   blockedTokenListProvider?: ITokenListProvider;
 
@@ -258,7 +258,7 @@ export type ProtocolPoolSelection = {
   /**
    * The top N pools for token in and token out that involve a token from a list of
    * hardcoded 'base tokens'. These are standard tokens such as WETH, USDC, DAI, etc.
-   * This is similar to how the legacy routing algorithm used by Uniswap would select
+   * This is similar to how the legacy routing algorithm used by the protocol would select
    * pools and is intended to make the new pool selection algorithm close to a superset
    * of the old algorithm.
    */
@@ -534,7 +534,6 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
 
     const chainName = ID_TO_NETWORK_NAME(chainId);
 
-    // ipfs urls in the following format: `https://cloudflare-ipfs.com/ipns/api.uniswap.org/v1/pools/${protocol}/${chainName}.json`;
     if (v2SubgraphProvider) {
       this.v2SubgraphProvider = v2SubgraphProvider;
     } else {
@@ -557,19 +556,6 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
       this.v3SubgraphProvider = v3SubgraphProvider;
     } else {
       this.v3SubgraphProvider = new V3SubgraphProvider(chainId);
-      // this.v3SubgraphProvider = new V3SubgraphProviderWithFallBacks([
-      //   new CachingV3SubgraphProvider(
-      //     chainId,
-      //     new URISubgraphProvider(
-      //       chainId,
-      //       `https://cloudflare-ipfs.com/ipns/api.uniswap.org/v1/pools/v3/${chainName}.json`,
-      //       undefined,
-      //       0
-      //     ),
-      //     new NodeJSCache(new NodeCache({ stdTTL: 300, useClones: false }))
-      //   ),
-      //   new StaticV3SubgraphProvider(chainId, this.v3PoolProvider),
-      // ]);
     }
 
     this.gasPriceProvider =
