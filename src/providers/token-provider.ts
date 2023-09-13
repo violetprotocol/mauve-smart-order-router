@@ -48,6 +48,13 @@ export const EUROC_MAINNET = new Token(
   'EUROC',
   'Euro Coin'
 );
+export const wstETH_MAINNET = new Token(
+  ChainId.MAINNET,
+  '0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0',
+  18,
+  'wstETH',
+  'Wrapped liquid staked Ether 2.0'
+);
 export const LsETH_MAINNET = new Token(
   ChainId.MAINNET,
   '0x8c1BEd5b9a0928467c9B1341Da1D7BD5e10b6549',

@@ -52,6 +52,7 @@ import {
   WBTC_OPTIMISTIC_KOVAN,
   WMATIC_POLYGON,
   WMATIC_POLYGON_MUMBAI,
+  wstETH_MAINNET,
 } from './token-provider';
 
 // These tokens will added to the Token cache on initialization.
@@ -62,6 +63,7 @@ export const CACHE_SEED_TOKENS: {
     WETH: WRAPPED_NATIVE_CURRENCY[ChainId.MAINNET]!,
     USDC: USDC_MAINNET,
     EUROC: EUROC_MAINNET,
+    WSETH: wstETH_MAINNET,
     CBETH: cbETH_MAINNET,
     LSETH: LsETH_MAINNET,
     USDT: USDT_MAINNET,
