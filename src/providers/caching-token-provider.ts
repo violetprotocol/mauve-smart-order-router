@@ -5,6 +5,7 @@ import { ChainId, log, WRAPPED_NATIVE_CURRENCY } from '../util';
 
 import { ICache } from './cache';
 import {
+  cbETH_MAINNET,
   CELO,
   CELO_ALFAJORES,
   CEUR_CELO,
@@ -22,7 +23,9 @@ import {
   DAI_POLYGON_MUMBAI,
   DAI_RINKEBY_1,
   DAI_RINKEBY_2,
+  EUROC_MAINNET,
   ITokenProvider,
+  LsETH_MAINNET,
   TokenAccessor,
   UNI_ARBITRUM_RINKEBY,
   USDC_ARBITRUM,
@@ -42,13 +45,13 @@ import {
   USDT_OPTIMISM_GOERLI,
   USDT_OPTIMISTIC_KOVAN,
   WBTC_ARBITRUM,
-  WBTC_MAINNET,
   WBTC_MOONBEAM,
   WBTC_OPTIMISM,
   WBTC_OPTIMISM_GOERLI,
   WBTC_OPTIMISTIC_KOVAN,
   WMATIC_POLYGON,
   WMATIC_POLYGON_MUMBAI,
+  wstETH_MAINNET,
 } from './token-provider';
 
 // These tokens will added to the Token cache on initialization.
@@ -59,18 +62,11 @@ export const CACHE_SEED_TOKENS: {
     WETH: WRAPPED_NATIVE_CURRENCY[ChainId.MAINNET]!,
     USDC: USDC_MAINNET,
     USDT: USDT_MAINNET,
-    WBTC: WBTC_MAINNET,
     DAI: DAI_MAINNET,
-    // This token stores its symbol as bytes32, therefore can not be fetched on-chain using
-    // our token providers.
-    // This workaround adds it to the cache, so we won't try to fetch it on-chain.
-    RING: new Token(
-      ChainId.MAINNET,
-      '0x9469D013805bFfB7D3DEBe5E7839237e535ec483',
-      18,
-      'RING',
-      'RING'
-    ),
+    EUROC: EUROC_MAINNET,
+    WSETH: wstETH_MAINNET,
+    CBETH: cbETH_MAINNET,
+    LSETH: LsETH_MAINNET,
   },
   [ChainId.RINKEBY]: {
     WETH: WRAPPED_NATIVE_CURRENCY[ChainId.RINKEBY]!,
