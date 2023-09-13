@@ -15,7 +15,6 @@ import {
   DAI_ARBITRUM_RINKEBY,
   DAI_CELO,
   DAI_CELO_ALFAJORES,
-  DAI_MAINNET,
   DAI_MOONBEAM,
   DAI_OPTIMISM,
   DAI_OPTIMISM_GOERLI,
@@ -40,12 +39,10 @@ import {
   USDC_POLYGON,
   USDT_ARBITRUM,
   USDT_ARBITRUM_RINKEBY,
-  USDT_MAINNET,
   USDT_OPTIMISM,
   USDT_OPTIMISM_GOERLI,
   USDT_OPTIMISTIC_KOVAN,
   WBTC_ARBITRUM,
-  WBTC_MAINNET,
   WBTC_MOONBEAM,
   WBTC_OPTIMISM,
   WBTC_OPTIMISM_GOERLI,
@@ -66,19 +63,6 @@ export const CACHE_SEED_TOKENS: {
     WSETH: wstETH_MAINNET,
     CBETH: cbETH_MAINNET,
     LSETH: LsETH_MAINNET,
-    USDT: USDT_MAINNET,
-    WBTC: WBTC_MAINNET,
-    DAI: DAI_MAINNET,
-    // This token stores its symbol as bytes32, therefore can not be fetched on-chain using
-    // our token providers.
-    // This workaround adds it to the cache, so we won't try to fetch it on-chain.
-    RING: new Token(
-      ChainId.MAINNET,
-      '0x9469D013805bFfB7D3DEBe5E7839237e535ec483',
-      18,
-      'RING',
-      'RING'
-    ),
   },
   [ChainId.RINKEBY]: {
     WETH: WRAPPED_NATIVE_CURRENCY[ChainId.RINKEBY]!,
