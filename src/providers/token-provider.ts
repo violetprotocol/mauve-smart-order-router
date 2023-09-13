@@ -41,6 +41,27 @@ export const USDC_MAINNET = new Token(
   'USDC',
   'USD//C'
 );
+export const EUROC_MAINNET = new Token(
+  ChainId.MAINNET,
+  '0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c',
+  6,
+  'EUROC',
+  'Euro Coin'
+);
+export const LsETH_MAINNET = new Token(
+  ChainId.MAINNET,
+  '0x8c1BEd5b9a0928467c9B1341Da1D7BD5e10b6549',
+  18,
+  'LsETH',
+  'Liquid Staked ETH'
+);
+export const cbETH_MAINNET = new Token(
+  ChainId.MAINNET,
+  '0xbe9895146f7af43049ca1c1ae358b0541ea49704',
+  18,
+  'cbETH',
+  'Coinbase Wrapped Staked ETH'
+);
 export const USDT_MAINNET = new Token(
   ChainId.MAINNET,
   '0xdAC17F958D2ee523a2206206994597C13D831ec7',

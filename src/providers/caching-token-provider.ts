@@ -5,6 +5,7 @@ import { ChainId, log, WRAPPED_NATIVE_CURRENCY } from '../util';
 
 import { ICache } from './cache';
 import {
+  cbETH_MAINNET,
   CELO,
   CELO_ALFAJORES,
   CEUR_CELO,
@@ -22,7 +23,9 @@ import {
   DAI_POLYGON_MUMBAI,
   DAI_RINKEBY_1,
   DAI_RINKEBY_2,
+  EUROC_MAINNET,
   ITokenProvider,
+  LsETH_MAINNET,
   TokenAccessor,
   UNI_ARBITRUM_RINKEBY,
   USDC_ARBITRUM,
@@ -58,6 +61,9 @@ export const CACHE_SEED_TOKENS: {
   [ChainId.MAINNET]: {
     WETH: WRAPPED_NATIVE_CURRENCY[ChainId.MAINNET]!,
     USDC: USDC_MAINNET,
+    EUROC: EUROC_MAINNET,
+    CBETH: cbETH_MAINNET,
+    LSETH: LsETH_MAINNET,
     USDT: USDT_MAINNET,
     WBTC: WBTC_MAINNET,
     DAI: DAI_MAINNET,
