@@ -106,11 +106,6 @@ export abstract class BaseCommand extends Command {
     tokenListURI: flags.string({
       required: false,
     }),
-    router: flags.string({
-      char: 's',
-      required: false,
-      default: 'alpha',
-    }),
     debug: flags.boolean(),
     debugJSON: flags.boolean(),
   };
@@ -183,7 +178,6 @@ export abstract class BaseCommand extends Command {
     const query: ParserOutput<any, any> = this.parse();
     const {
       chainId: chainIdNumb,
-      router: routerStr,
       debug,
       debugJSON,
       tokenListURI,
