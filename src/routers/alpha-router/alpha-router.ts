@@ -18,7 +18,6 @@ import NodeCache from 'node-cache';
 import {
   CachingGasStationProvider,
   CachingTokenProviderWithFallback,
-  CachingV2PoolProvider,
   CachingV3PoolProvider,
   EIP1559GasPriceProvider,
   ETHGasStationInfoProvider,
@@ -46,10 +45,6 @@ import {
   TokenValidationResult,
   TokenValidatorProvider,
 } from '../../providers/token-validator-provider';
-import {
-  IV2PoolProvider,
-  V2PoolProvider,
-} from '../../providers/v2/pool-provider';
 import {
   ArbitrumGasData,
   ArbitrumGasDataProvider,
@@ -131,10 +126,6 @@ export type AlphaRouterParams = {
    * The provider for getting V3 quotes.
    */
   onChainQuoteProvider?: IOnChainQuoteProvider;
-  /**
-   * The provider for getting data about V2 pools.
-   */
-  v2PoolProvider?: IV2PoolProvider;
   /**
    * The provider for getting data about Tokens.
    */
@@ -285,7 +276,6 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
   protected v3SubgraphProvider: IV3SubgraphProvider;
   protected v3PoolProvider: IV3PoolProvider;
   protected onChainQuoteProvider: IOnChainQuoteProvider;
-  protected v2PoolProvider: IV2PoolProvider;
   protected tokenProvider: ITokenProvider;
   protected gasPriceProvider: IGasPriceProvider;
   protected swapRouterProvider: ISwapRouterProvider;
@@ -304,7 +294,6 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
     multicall2Provider,
     v3PoolProvider,
     onChainQuoteProvider,
-    v2PoolProvider,
     tokenProvider,
     blockedTokenListProvider,
     v3SubgraphProvider,
@@ -446,14 +435,6 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
           break;
       }
     }
-
-    this.v2PoolProvider =
-      v2PoolProvider ??
-      new CachingV2PoolProvider(
-        chainId,
-        new V2PoolProvider(chainId, this.multicall2Provider),
-        new NodeJSCache(new NodeCache({ stdTTL: 60, useClones: false }))
-      );
 
     this.blockedTokenListProvider =
       blockedTokenListProvider ??
@@ -794,7 +775,6 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
         gasPriceWei,
         v3poolProvider: this.v3PoolProvider,
         token: quoteToken,
-        v2poolProvider: this.v2PoolProvider,
         l2GasDataProvider: this.l2GasDataProvider,
       }),
     ]);

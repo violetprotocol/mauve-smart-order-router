@@ -94,7 +94,7 @@ export type BuildOnChainGasModelFactoryType = {
   gasPriceWei: BigNumber;
   v3poolProvider: IV3PoolProvider;
   token: Token;
-  v2poolProvider: IV2PoolProvider;
+  v2poolProvider?: IV2PoolProvider;
   l2GasDataProvider?:
     | IL2GasDataProvider<OptimismGasData>
     | IL2GasDataProvider<ArbitrumGasData>;

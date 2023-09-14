@@ -2,7 +2,6 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { BaseProvider } from '@ethersproject/providers';
 import { Protocol } from '@violetprotocol/mauve-router-sdk';
 import { Fraction, Percent, TradeType } from '@violetprotocol/mauve-sdk-core';
-import { Pair } from '@violetprotocol/mauve-v2-sdk';
 import { encodeSqrtRatioX96, Pool } from '@violetprotocol/mauve-v3-sdk';
 import _ from 'lodash';
 import sinon from 'sinon';
@@ -26,9 +25,6 @@ import {
   USDC_MAINNET as USDC,
   USDT_MAINNET as USDT,
   V2Route,
-  V2RouteWithValidQuote,
-  V2SubgraphPool,
-  V2SubgraphProvider,
   V3HeuristicGasModelFactory,
   V3PoolProvider,
   V3Route,
@@ -42,31 +38,22 @@ import {
   TokenValidationResult,
   TokenValidatorProvider,
 } from '../../../../src/providers/token-validator-provider';
-import { V2PoolProvider } from '../../../../src/providers/v2/pool-provider';
 import { MixedRouteHeuristicGasModelFactory } from '../../../../src/routers/alpha-router/gas-models/mixedRoute/mixed-route-heuristic-gas-model';
-import { V2HeuristicGasModelFactory } from '../../../../src/routers/alpha-router/gas-models/v2/v2-heuristic-gas-model';
 import {
   buildMockTokenAccessor,
-  buildMockV2PoolAccessor,
   buildMockV3PoolAccessor,
-  DAI_USDT,
   DAI_USDT_LOW,
   mockBlock,
   mockBlockBN,
   mockGasPriceWeiBN,
   MOCK_ZERO_DEC_TOKEN,
-  pairToV2SubgraphPool,
   poolToV3SubgraphPool,
-  USDC_DAI,
   USDC_DAI_LOW,
   USDC_DAI_MEDIUM,
   USDC_MOCK_LOW,
   USDC_USDT_MEDIUM,
-  USDC_WETH,
   USDC_WETH_LOW,
-  WBTC_WETH,
   WETH9_USDT_LOW,
-  WETH_USDT,
 } from '../../../test-util/mock-data';
 
 // const helper = require('../../../../src/routers/alpha-router/functions/calculate-ratio-amount-in');
@@ -81,10 +68,6 @@ describe('alpha router', () => {
   let mockOnChainQuoteProvider: sinon.SinonStubbedInstance<OnChainQuoteProvider>;
   let mockV3GasModelFactory: sinon.SinonStubbedInstance<V3HeuristicGasModelFactory>;
   let mockMixedRouteGasModelFactory: sinon.SinonStubbedInstance<MixedRouteHeuristicGasModelFactory>;
-
-  let mockV2PoolProvider: sinon.SinonStubbedInstance<V2PoolProvider>;
-  let mockV2SubgraphProvider: sinon.SinonStubbedInstance<V2SubgraphProvider>;
-  let mockV2GasModelFactory: sinon.SinonStubbedInstance<V2HeuristicGasModelFactory>;
 
   let mockGasPriceProvider: sinon.SinonStubbedInstance<ETHGasStationInfoProvider>;
 
@@ -169,28 +152,12 @@ describe('alpha router', () => {
       token1: tB,
     }));
 
-    const v2MockPools = [DAI_USDT, USDC_WETH, WETH_USDT, USDC_DAI, WBTC_WETH];
-    mockV2PoolProvider = sinon.createStubInstance(V2PoolProvider);
-    mockV2PoolProvider.getPools.resolves(buildMockV2PoolAccessor(v2MockPools));
-    mockV2PoolProvider.getPoolAddress.callsFake((tA, tB) => ({
-      poolAddress: Pair.getAddress(tA, tB),
-      token0: tA,
-      token1: tB,
-    }));
-
     mockV3SubgraphProvider = sinon.createStubInstance(V3SubgraphProvider);
     const v3MockSubgraphPools: V3SubgraphPool[] = _.map(
       v3MockPools,
       poolToV3SubgraphPool
     );
     mockV3SubgraphProvider.getPools.resolves(v3MockSubgraphPools);
-
-    mockV2SubgraphProvider = sinon.createStubInstance(V2SubgraphProvider);
-    const v2MockSubgraphPools: V2SubgraphPool[] = _.map(
-      v2MockPools,
-      pairToV2SubgraphPool
-    );
-    mockV2SubgraphProvider.getPools.resolves(v2MockSubgraphPools);
 
     mockOnChainQuoteProvider = sinon.createStubInstance(OnChainQuoteProvider);
     mockOnChainQuoteProvider.getQuotesManyExactIn.callsFake(
@@ -280,27 +247,6 @@ describe('alpha router', () => {
       mixedRouteMockGasModel
     );
 
-    mockV2GasModelFactory = sinon.createStubInstance(
-      V2HeuristicGasModelFactory
-    );
-    const v2MockGasModel = {
-      estimateGasCost: sinon.stub(),
-    };
-    v2MockGasModel.estimateGasCost.callsFake((r: V2RouteWithValidQuote) => {
-      return {
-        gasEstimate: BigNumber.from(10000),
-        gasCostInToken: CurrencyAmount.fromRawAmount(
-          r.quoteToken,
-          r.quote.multiply(new Fraction(95, 100)).quotient
-        ),
-        gasCostInUSD: CurrencyAmount.fromRawAmount(
-          USDC,
-          r.quote.multiply(new Fraction(95, 100)).quotient
-        ),
-      };
-    });
-    mockV2GasModelFactory.buildGasModel.resolves(v2MockGasModel);
-
     mockBlockTokenListProvider = sinon.createStubInstance(
       CachingTokenListProvider
     );
@@ -333,7 +279,6 @@ describe('alpha router', () => {
       gasPriceProvider: mockGasPriceProvider,
       v3GasModelFactory: mockV3GasModelFactory,
       blockedTokenListProvider: mockBlockTokenListProvider,
-      v2PoolProvider: mockV2PoolProvider,
       mixedRouteGasModelFactory: mockMixedRouteGasModelFactory,
       swapRouterProvider: mockSwapRouterProvider,
       tokenValidatorProvider: mockTokenValidatorProvider,
@@ -427,25 +372,7 @@ describe('alpha router', () => {
           gasPriceWei: mockGasPriceWeiBN,
           v3poolProvider: sinon.match.any,
           token: WRAPPED_NATIVE_CURRENCY[1],
-          v2poolProvider: sinon.match.any,
           l2GasDataProvider: undefined,
-        })
-      ).toBeTruthy();
-      expect(
-        mockV2GasModelFactory.buildGasModel.calledWith({
-          chainId: 1,
-          gasPriceWei: mockGasPriceWeiBN,
-          poolProvider: sinon.match.any,
-          token: WRAPPED_NATIVE_CURRENCY[1],
-        })
-      ).toBeTruthy();
-      expect(
-        mockMixedRouteGasModelFactory.buildGasModel.calledWith({
-          chainId: 1,
-          gasPriceWei: mockGasPriceWeiBN,
-          v3poolProvider: sinon.match.any, /// v3 pool provider
-          v2poolProvider: sinon.match.any,
-          token: WRAPPED_NATIVE_CURRENCY[1],
         })
       ).toBeTruthy();
 
@@ -557,7 +484,6 @@ describe('alpha router', () => {
           gasPriceWei: mockGasPriceWeiBN,
           v3poolProvider: sinon.match.any,
           token: WRAPPED_NATIVE_CURRENCY[1],
-          v2poolProvider: sinon.match.any,
           l2GasDataProvider: undefined,
         })
       ).toBeTruthy();
@@ -729,7 +655,6 @@ describe('alpha router', () => {
           gasPriceWei: mockGasPriceWeiBN,
           v3poolProvider: sinon.match.any,
           token: WRAPPED_NATIVE_CURRENCY[1],
-          v2poolProvider: sinon.match.any,
           l2GasDataProvider: undefined,
         })
       ).toBeTruthy();
@@ -807,7 +732,6 @@ describe('alpha router', () => {
           gasPriceWei: mockGasPriceWeiBN,
           v3poolProvider: sinon.match.any,
           token: WRAPPED_NATIVE_CURRENCY[1],
-          v2poolProvider: sinon.match.any,
           l2GasDataProvider: undefined,
         })
       ).toBeTruthy();
@@ -877,7 +801,6 @@ describe('alpha router', () => {
           gasPriceWei: mockGasPriceWeiBN,
           v3poolProvider: sinon.match.any,
           token: USDC,
-          v2poolProvider: sinon.match.any,
           l2GasDataProvider: undefined,
         })
       ).toBeTruthy();
@@ -950,7 +873,6 @@ describe('alpha router', () => {
           gasPriceWei: mockGasPriceWeiBN,
           v3poolProvider: sinon.match.any,
           token: USDC,
-          v2poolProvider: sinon.match.any,
           l2GasDataProvider: undefined,
         })
       ).toBeTruthy();
