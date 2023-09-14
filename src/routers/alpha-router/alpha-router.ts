@@ -19,25 +19,18 @@ import {
   CachingGasStationProvider,
   CachingTokenProviderWithFallback,
   CachingV2PoolProvider,
-  CachingV2SubgraphProvider,
   CachingV3PoolProvider,
   EIP1559GasPriceProvider,
   ETHGasStationInfoProvider,
   IOnChainQuoteProvider,
   ISwapRouterProvider,
-  IV2QuoteProvider,
-  IV2SubgraphProvider,
   LegacyGasPriceProvider,
   NodeJSCache,
   OnChainGasPriceProvider,
   OnChainQuoteProvider,
   Simulator,
-  StaticV2SubgraphProvider,
   SwapRouterProvider,
   UniswapMulticallProvider,
-  URISubgraphProvider,
-  V2QuoteProvider,
-  V2SubgraphProviderWithFallBacks,
 } from '../../providers';
 import {
   CachingTokenListProvider,
@@ -74,7 +67,7 @@ import {
 } from '../../providers/v3/subgraph-provider';
 import { Erc20__factory } from '../../types/other/factories/Erc20__factory';
 import { CurrencyAmount } from '../../util/amounts';
-import { ChainId, ID_TO_CHAIN_ID, ID_TO_NETWORK_NAME } from '../../util/chains';
+import { ChainId, ID_TO_CHAIN_ID } from '../../util/chains';
 import { log } from '../../util/log';
 import {
   buildSwapMethodParameters,
@@ -106,10 +99,7 @@ import {
   getV3CandidatePools,
   PoolId,
 } from './functions/get-candidate-pools';
-import {
-  IGasModel,
-  IOnChainGasModelFactory,
-} from './gas-models/gas-model';
+import { IGasModel, IOnChainGasModelFactory } from './gas-models/gas-model';
 import { MixedRouteHeuristicGasModelFactory } from './gas-models/mixedRoute/mixed-route-heuristic-gas-model';
 
 import { V3HeuristicGasModelFactory } from '.';
@@ -142,18 +132,9 @@ export type AlphaRouterParams = {
    */
   onChainQuoteProvider?: IOnChainQuoteProvider;
   /**
-   * The provider for getting all pools that exist on V2 from the Subgraph. The pools
-   * from this provider are filtered during the algorithm to a set of candidate pools.
-   */
-  v2SubgraphProvider?: IV2SubgraphProvider;
-  /**
    * The provider for getting data about V2 pools.
    */
   v2PoolProvider?: IV2PoolProvider;
-  /**
-   * The provider for getting V3 quotes.
-   */
-  v2QuoteProvider?: IV2QuoteProvider;
   /**
    * The provider for getting data about Tokens.
    */
@@ -263,10 +244,6 @@ export type AlphaRouterConfig = {
    */
   protocols?: Protocol[];
   /**
-   * Config for selecting which pools to consider routing via on V2.
-   */
-  v2PoolSelection: ProtocolPoolSelection;
-  /**
    * Config for selecting which pools to consider routing via on V3.
    */
   v3PoolSelection: ProtocolPoolSelection;
@@ -289,11 +266,6 @@ export type AlphaRouterConfig = {
    */
   forceCrossProtocol: boolean;
   /**
-   * Force the alpha router to choose a mixed route swap.
-   * Default will be falsy. It is only included for testing purposes.
-   */
-  forceMixedRoutes?: boolean;
-  /**
    * The minimum percentage of the input token to use for each route in a split route.
    * All routes will have a multiple of this value. For example is distribution percentage is 5,
    * a potential return swap would be:
@@ -313,8 +285,6 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
   protected v3SubgraphProvider: IV3SubgraphProvider;
   protected v3PoolProvider: IV3PoolProvider;
   protected onChainQuoteProvider: IOnChainQuoteProvider;
-  protected v2SubgraphProvider: IV2SubgraphProvider;
-  protected v2QuoteProvider: IV2QuoteProvider;
   protected v2PoolProvider: IV2PoolProvider;
   protected tokenProvider: ITokenProvider;
   protected gasPriceProvider: IGasPriceProvider;
@@ -335,8 +305,6 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
     v3PoolProvider,
     onChainQuoteProvider,
     v2PoolProvider,
-    v2QuoteProvider,
-    v2SubgraphProvider,
     tokenProvider,
     blockedTokenListProvider,
     v3SubgraphProvider,
@@ -487,8 +455,6 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
         new NodeJSCache(new NodeCache({ stdTTL: 60, useClones: false }))
       );
 
-    this.v2QuoteProvider = v2QuoteProvider ?? new V2QuoteProvider();
-
     this.blockedTokenListProvider =
       blockedTokenListProvider ??
       new CachingTokenListProvider(
@@ -508,26 +474,6 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
         ),
         new TokenProvider(chainId, this.multicall2Provider)
       );
-
-    const chainName = ID_TO_NETWORK_NAME(chainId);
-
-    if (v2SubgraphProvider) {
-      this.v2SubgraphProvider = v2SubgraphProvider;
-    } else {
-      this.v2SubgraphProvider = new V2SubgraphProviderWithFallBacks([
-        new CachingV2SubgraphProvider(
-          chainId,
-          new URISubgraphProvider(
-            chainId,
-            `https://cloudflare-ipfs.com/ipns/api.uniswap.org/v1/pools/v2/${chainName}.json`,
-            undefined,
-            0
-          ),
-          new NodeJSCache(new NodeCache({ stdTTL: 300, useClones: false }))
-        ),
-        new StaticV2SubgraphProvider(chainId),
-      ]);
-    }
 
     if (v3SubgraphProvider) {
       this.v3SubgraphProvider = v3SubgraphProvider;
@@ -1308,71 +1254,15 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
     }
 
     let hasV3Route = false;
-    let hasV2Route = false;
-    let hasMixedRoute = false;
     for (const routeAmount of routeAmounts) {
       if (routeAmount.protocol == Protocol.V3) {
         hasV3Route = true;
-      }
-      if (routeAmount.protocol == Protocol.V2) {
-        hasV2Route = true;
-      }
-      if (routeAmount.protocol == Protocol.MIXED) {
-        hasMixedRoute = true;
+      } else {
+        throw new Error(`Invalid protocol ${routeAmount.protocol}`);
       }
     }
 
-    if (hasMixedRoute && (hasV3Route || hasV2Route)) {
-      if (hasV3Route && hasV2Route) {
-        metric.putMetric(
-          `MixedAndV3AndV2SplitRoute`,
-          1,
-          MetricLoggerUnit.Count
-        );
-        metric.putMetric(
-          `MixedAndV3AndV2SplitRouteForChain${this.chainId}`,
-          1,
-          MetricLoggerUnit.Count
-        );
-      } else if (hasV3Route) {
-        metric.putMetric(`MixedAndV3SplitRoute`, 1, MetricLoggerUnit.Count);
-        metric.putMetric(
-          `MixedAndV3SplitRouteForChain${this.chainId}`,
-          1,
-          MetricLoggerUnit.Count
-        );
-      } else if (hasV2Route) {
-        metric.putMetric(`MixedAndV2SplitRoute`, 1, MetricLoggerUnit.Count);
-        metric.putMetric(
-          `MixedAndV2SplitRouteForChain${this.chainId}`,
-          1,
-          MetricLoggerUnit.Count
-        );
-      }
-    } else if (hasV3Route && hasV2Route) {
-      metric.putMetric(`V3AndV2SplitRoute`, 1, MetricLoggerUnit.Count);
-      metric.putMetric(
-        `V3AndV2SplitRouteForChain${this.chainId}`,
-        1,
-        MetricLoggerUnit.Count
-      );
-    } else if (hasMixedRoute) {
-      if (routeAmounts.length > 1) {
-        metric.putMetric(`MixedSplitRoute`, 1, MetricLoggerUnit.Count);
-        metric.putMetric(
-          `MixedSplitRouteForChain${this.chainId}`,
-          1,
-          MetricLoggerUnit.Count
-        );
-      } else {
-        metric.putMetric(`MixedRoute`, 1, MetricLoggerUnit.Count);
-        metric.putMetric(
-          `MixedRouteForChain${this.chainId}`,
-          1,
-          MetricLoggerUnit.Count
-        );
-      }
-    } else if (hasV3Route) {
+    if (hasV3Route) {
       if (routeAmounts.length > 1) {
         metric.putMetric(`V3SplitRoute`, 1, MetricLoggerUnit.Count);
         metric.putMetric(
@@ -1384,22 +1274,6 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
         metric.putMetric(`V3Route`, 1, MetricLoggerUnit.Count);
         metric.putMetric(
           `V3RouteForChain${this.chainId}`,
-          1,
-          MetricLoggerUnit.Count
-        );
-      }
-    } else if (hasV2Route) {
-      if (routeAmounts.length > 1) {
-        metric.putMetric(`V2SplitRoute`, 1, MetricLoggerUnit.Count);
-        metric.putMetric(
-          `V2SplitRouteForChain${this.chainId}`,
-          1,
-          MetricLoggerUnit.Count
-        );
-      } else {
-        metric.putMetric(`V2Route`, 1, MetricLoggerUnit.Count);
-        metric.putMetric(
-          `V2RouteForChain${this.chainId}`,
           1,
           MetricLoggerUnit.Count
         );
