@@ -13,14 +13,6 @@ export const DEFAULT_ROUTING_CONFIG_BY_CHAIN = (
     case ChainId.OPTIMISM_GOERLI:
     case ChainId.OPTIMISTIC_KOVAN:
       return {
-        v2PoolSelection: {
-          topN: 3,
-          topNDirectSwaps: 1,
-          topNTokenInOut: 5,
-          topNSecondHop: 2,
-          topNWithEachBaseToken: 2,
-          topNWithBaseToken: 6,
-        },
         v3PoolSelection: {
           topN: 2,
           topNDirectSwaps: 2,
@@ -44,14 +36,6 @@ export const DEFAULT_ROUTING_CONFIG_BY_CHAIN = (
     case ChainId.CELO:
     case ChainId.CELO_ALFAJORES:
       return {
-        v2PoolSelection: {
-          topN: 3,
-          topNDirectSwaps: 1,
-          topNTokenInOut: 5,
-          topNSecondHop: 2,
-          topNWithEachBaseToken: 2,
-          topNWithBaseToken: 6,
-        },
         v3PoolSelection: {
           topN: 2,
           topNDirectSwaps: 2,
@@ -69,14 +53,6 @@ export const DEFAULT_ROUTING_CONFIG_BY_CHAIN = (
     default:
       return {
         protocols: [Protocol.V3],
-        v2PoolSelection: {
-          topN: 3,
-          topNDirectSwaps: 1,
-          topNTokenInOut: 5,
-          topNSecondHop: 2,
-          topNWithEachBaseToken: 2,
-          topNWithBaseToken: 6,
-        },
         v3PoolSelection: {
           topN: 2,
           topNDirectSwaps: 2,

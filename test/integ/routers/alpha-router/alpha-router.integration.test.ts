@@ -454,7 +454,6 @@ describe('alpha router integration', () => {
       chainId: ChainId.MAINNET,
       provider: hardhat.providers[0]!,
       multicall2Provider,
-      v2PoolProvider,
       v3PoolProvider,
       simulator,
     });
@@ -465,7 +464,6 @@ describe('alpha router integration', () => {
       chainId: ChainId.MAINNET,
       provider: hardhat.providers[0]!,
       multicall2Provider,
-      v2PoolProvider,
       v3PoolProvider,
       simulator: ethEstimateGasSimulator,
     });

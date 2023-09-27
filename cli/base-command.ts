@@ -34,10 +34,8 @@ import {
   ISwapToRatio,
   ITokenProvider,
   IV3PoolProvider,
-  LegacyRouter,
   MetricLogger,
   NodeJSCache,
-  OnChainQuoteProvider,
   routeAmountsToString,
   RouteWithValidQuote,
   setGlobalLogger,
@@ -107,11 +105,6 @@ export abstract class BaseCommand extends Command {
     }),
     tokenListURI: flags.string({
       required: false,
-    }),
-    router: flags.string({
-      char: 's',
-      required: false,
-      default: 'alpha',
     }),
     debug: flags.boolean(),
     debugJSON: flags.boolean(),
@@ -185,7 +178,6 @@ export abstract class BaseCommand extends Command {
     const query: ParserOutput<any, any> = this.parse();
     const {
       chainId: chainIdNumb,
-      router: routerStr,
       debug,
       debugJSON,
       tokenListURI,
@@ -263,80 +255,63 @@ export abstract class BaseCommand extends Command {
       tokenProviderOnChain
     );
 
-    if (routerStr == 'legacy') {
-      this._router = new LegacyRouter({
+    const gasPriceCache = new NodeJSCache<GasPrice>(
+      new NodeCache({ stdTTL: 15, useClones: true })
+    );
+
+    const v3PoolProvider = new CachingV3PoolProvider(
+      ChainId.MAINNET,
+      new V3PoolProvider(ChainId.MAINNET, multicall2Provider),
+      new NodeJSCache(new NodeCache({ stdTTL: 360, useClones: false }))
+    );
+    const v2PoolProvider = new V2PoolProvider(
+      ChainId.MAINNET,
+      multicall2Provider
+    );
+
+    const tenderlySimulator = new TenderlySimulator(
+      chainId,
+      'http://api.tenderly.co',
+      process.env.TENDERLY_USER!,
+      process.env.TENDERLY_PROJECT!,
+      process.env.TENDERLY_ACCESS_KEY!,
+      v2PoolProvider,
+      v3PoolProvider,
+      provider,
+      { [ChainId.ARBITRUM_ONE]: 1 }
+    );
+
+    const ethEstimateGasSimulator = new EthEstimateGasSimulator(
+      chainId,
+      provider,
+      v2PoolProvider,
+      v3PoolProvider
+    );
+
+    const simulator = new FallbackTenderlySimulator(
+      chainId,
+      provider,
+      tenderlySimulator,
+      ethEstimateGasSimulator
+    );
+
+    const router = new AlphaRouter({
+      provider,
+      chainId,
+      multicall2Provider: multicall2Provider,
+      gasPriceProvider: new CachingGasStationProvider(
         chainId,
-        multicall2Provider,
-        poolProvider: new V3PoolProvider(chainId, multicall2Provider),
-        quoteProvider: new OnChainQuoteProvider(
+        new OnChainGasPriceProvider(
           chainId,
-          provider,
-          multicall2Provider
+          new EIP1559GasPriceProvider(provider),
+          new LegacyGasPriceProvider(provider)
         ),
-        tokenProvider: this.tokenProvider,
-      });
-    } else {
-      const gasPriceCache = new NodeJSCache<GasPrice>(
-        new NodeCache({ stdTTL: 15, useClones: true })
-      );
+        gasPriceCache
+      ),
+      simulator,
+    });
 
-      // const useDefaultQuoteProvider =
-      //   chainId != ChainId.ARBITRUM_ONE && chainId != ChainId.ARBITRUM_RINKEBY;
-
-      const v3PoolProvider = new CachingV3PoolProvider(
-        ChainId.MAINNET,
-        new V3PoolProvider(ChainId.MAINNET, multicall2Provider),
-        new NodeJSCache(new NodeCache({ stdTTL: 360, useClones: false }))
-      );
-      const v2PoolProvider = new V2PoolProvider(
-        ChainId.MAINNET,
-        multicall2Provider
-      );
-
-      const tenderlySimulator = new TenderlySimulator(
-        chainId,
-        'http://api.tenderly.co',
-        process.env.TENDERLY_USER!,
-        process.env.TENDERLY_PROJECT!,
-        process.env.TENDERLY_ACCESS_KEY!,
-        v2PoolProvider,
-        v3PoolProvider,
-        provider,
-        { [ChainId.ARBITRUM_ONE]: 1 }
-      );
-
-      const ethEstimateGasSimulator = new EthEstimateGasSimulator(
-        chainId,
-        provider,
-        v2PoolProvider,
-        v3PoolProvider
-      );
-
-      const simulator = new FallbackTenderlySimulator(
-        chainId,
-        provider,
-        tenderlySimulator,
-        ethEstimateGasSimulator
-      );
-
-      const router = new AlphaRouter({
-        provider,
-        chainId,
-        multicall2Provider: multicall2Provider,
-        gasPriceProvider: new CachingGasStationProvider(
-          chainId,
-          new OnChainGasPriceProvider(
-            chainId,
-            new EIP1559GasPriceProvider(provider),
-            new LegacyGasPriceProvider(provider)
-          ),
-          gasPriceCache
-        ),
-        simulator,
-      });
-
-      this._router = router;
-    }
+    this._router = router;
   }
 
   logSwapResults(
