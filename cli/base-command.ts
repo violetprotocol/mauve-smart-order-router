@@ -259,9 +259,6 @@ export abstract class BaseCommand extends Command {
       new NodeCache({ stdTTL: 15, useClones: true })
     );
 
-    // const useDefaultQuoteProvider =
-    //   chainId != ChainId.ARBITRUM_ONE && chainId != ChainId.ARBITRUM_RINKEBY;
-
     const v3PoolProvider = new CachingV3PoolProvider(
       ChainId.MAINNET,
       new V3PoolProvider(ChainId.MAINNET, multicall2Provider),
