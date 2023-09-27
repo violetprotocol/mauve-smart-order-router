@@ -15,7 +15,6 @@ import {
   ETHGasStationInfoProvider,
   FallbackTenderlySimulator,
   MixedRoute,
-  MixedRouteWithValidQuote,
   OnChainQuoteProvider,
   RouteWithQuotes,
   SwapRouterProvider,
@@ -38,7 +37,6 @@ import {
   TokenValidationResult,
   TokenValidatorProvider,
 } from '../../../../src/providers/token-validator-provider';
-import { MixedRouteHeuristicGasModelFactory } from '../../../../src/routers/alpha-router/gas-models/mixedRoute/mixed-route-heuristic-gas-model';
 import {
   buildMockTokenAccessor,
   buildMockV3PoolAccessor,
@@ -67,7 +65,6 @@ describe('alpha router', () => {
   let mockV3SubgraphProvider: sinon.SinonStubbedInstance<V3SubgraphProvider>;
   let mockOnChainQuoteProvider: sinon.SinonStubbedInstance<OnChainQuoteProvider>;
   let mockV3GasModelFactory: sinon.SinonStubbedInstance<V3HeuristicGasModelFactory>;
-  let mockMixedRouteGasModelFactory: sinon.SinonStubbedInstance<MixedRouteHeuristicGasModelFactory>;
 
   let mockGasPriceProvider: sinon.SinonStubbedInstance<ETHGasStationInfoProvider>;
 
@@ -222,31 +219,6 @@ describe('alpha router', () => {
     });
     mockV3GasModelFactory.buildGasModel.resolves(v3MockGasModel);
 
-    mockMixedRouteGasModelFactory = sinon.createStubInstance(
-      MixedRouteHeuristicGasModelFactory
-    );
-    const mixedRouteMockGasModel = {
-      estimateGasCost: sinon.stub(),
-    };
-    mixedRouteMockGasModel.estimateGasCost.callsFake(
-      (r: MixedRouteWithValidQuote) => {
-        return {
-          gasEstimate: BigNumber.from(10000),
-          gasCostInToken: CurrencyAmount.fromRawAmount(
-            r.quoteToken,
-            r.quote.multiply(new Fraction(95, 100)).quotient
-          ),
-          gasCostInUSD: CurrencyAmount.fromRawAmount(
-            USDC,
-            r.quote.multiply(new Fraction(95, 100)).quotient
-          ),
-        };
-      }
-    );
-    mockMixedRouteGasModelFactory.buildGasModel.resolves(
-      mixedRouteMockGasModel
-    );
-
     mockBlockTokenListProvider = sinon.createStubInstance(
       CachingTokenListProvider
     );
@@ -279,7 +251,6 @@ describe('alpha router', () => {
       gasPriceProvider: mockGasPriceProvider,
       v3GasModelFactory: mockV3GasModelFactory,
       blockedTokenListProvider: mockBlockTokenListProvider,
-      mixedRouteGasModelFactory: mockMixedRouteGasModelFactory,
       swapRouterProvider: mockSwapRouterProvider,
       tokenValidatorProvider: mockTokenValidatorProvider,
       simulator: mockFallbackTenderlySimulator,

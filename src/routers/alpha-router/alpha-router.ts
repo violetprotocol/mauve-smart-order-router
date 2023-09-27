@@ -95,7 +95,6 @@ import {
   PoolId,
 } from './functions/get-candidate-pools';
 import { IGasModel, IOnChainGasModelFactory } from './gas-models/gas-model';
-import { MixedRouteHeuristicGasModelFactory } from './gas-models/mixedRoute/mixed-route-heuristic-gas-model';
 
 import { V3HeuristicGasModelFactory } from '.';
 
@@ -280,7 +279,6 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
   protected gasPriceProvider: IGasPriceProvider;
   protected swapRouterProvider: ISwapRouterProvider;
   protected v3GasModelFactory: IOnChainGasModelFactory;
-  protected mixedRouteGasModelFactory: IOnChainGasModelFactory;
   protected tokenValidatorProvider?: ITokenValidatorProvider;
   protected blockedTokenListProvider?: ITokenListProvider;
   protected l2GasDataProvider?:
@@ -299,7 +297,6 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
     v3SubgraphProvider,
     gasPriceProvider,
     v3GasModelFactory,
-    mixedRouteGasModelFactory,
     swapRouterProvider,
     optimismGasDataProvider,
     tokenValidatorProvider,
@@ -479,8 +476,6 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
       );
     this.v3GasModelFactory =
       v3GasModelFactory ?? new V3HeuristicGasModelFactory();
-    this.mixedRouteGasModelFactory =
-      mixedRouteGasModelFactory ?? new MixedRouteHeuristicGasModelFactory();
 
     this.swapRouterProvider =
       swapRouterProvider ?? new SwapRouterProvider(this.multicall2Provider);
