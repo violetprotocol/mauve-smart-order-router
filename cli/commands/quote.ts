@@ -39,6 +39,7 @@ export class Quote extends BaseCommand {
       required: false,
       default: false,
     }),
+    excludeTokens: flags.string({ required: false }),
     simulate: flags.boolean({ required: false, default: false }),
   };
 
@@ -67,6 +68,7 @@ export class Quote extends BaseCommand {
       protocols: protocolsStr,
       forceCrossProtocol,
       forceMixedRoutes,
+      excludeTokens,
       simulate,
     } = flags;
 
@@ -86,6 +88,13 @@ export class Quote extends BaseCommand {
         );
       }
     }
+
+    let excludeTokensFromRoute: string[] | undefined = undefined;
+    if (excludeTokens)
+      excludeTokensFromRoute = excludeTokens
+        .toLowerCase()
+        .replace(' ', '')
+        .split(',');
 
     const chainId = ID_TO_CHAIN_ID(chainIdNumb);
 
@@ -142,6 +151,7 @@ export class Quote extends BaseCommand {
           protocols,
           forceCrossProtocol,
           forceMixedRoutes,
+          excludeTokens: excludeTokensFromRoute,
         }
       );
     } else {
@@ -176,6 +186,7 @@ export class Quote extends BaseCommand {
           protocols,
           forceCrossProtocol,
           forceMixedRoutes,
+          excludeTokens: excludeTokensFromRoute,
         }
       );
     }

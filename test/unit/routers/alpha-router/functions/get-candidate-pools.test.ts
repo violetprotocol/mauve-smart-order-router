@@ -170,6 +170,34 @@ describe('get candidate pools', () => {
     ).toBeTruthy();
   });
 
+  test('succeeds to get top pools while excluding WETH', async () => {
+    await getV3CandidatePools({
+      tokenIn: USDC,
+      tokenOut: DAI,
+      routeType: TradeType.EXACT_INPUT,
+      routingConfig: {
+        ...ROUTING_CONFIG,
+        v3PoolSelection: {
+          ...ROUTING_CONFIG.v3PoolSelection,
+          topNTokenInOut: 1,
+        },
+        excludeTokens: [WRAPPED_NATIVE_CURRENCY[1].address],
+      },
+      poolProvider: mockV3PoolProvider,
+      subgraphProvider: mockV3SubgraphProvider,
+      tokenProvider: mockTokenProvider,
+      blockedTokenListProvider: mockBlockTokenListProvider,
+      chainId: ChainId.MAINNET,
+    });
+
+    expect(
+      mockV3PoolProvider.getPools.calledWithExactly([
+        [DAI, USDC, FeeAmount.LOW],
+        [DAI, USDT, FeeAmount.LOW],
+      ])
+    ).toBeTruthy();
+  });
+
   test('succeeds to get direct swap pools even if they dont exist in the subgraph', async () => {
     // Mock so that DAI_WETH exists on chain, but not in the subgraph
     const poolsOnSubgraph = [
