@@ -592,9 +592,6 @@ export async function getV3CandidatePools({
       const excludeToken0 = excludeTokens.find((ex) => token0.address == ex);
       const excludeToken1 = excludeTokens.find((ex) => token1.address == ex);
 
-      console.log(excludeToken0);
-      console.log(excludeToken1);
-
       if (excludeToken0 || excludeToken1) continue;
 
       filteredTokenPairs.push([token0, token1, fee]);
