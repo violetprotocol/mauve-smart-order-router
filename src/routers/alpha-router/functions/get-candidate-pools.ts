@@ -210,12 +210,27 @@ export async function getV3CandidatePools({
     blockNumber,
   });
 
+  // Only consider pools where neither tokens are to be excluded.
+  let prunedPoolsRaw: V3SubgraphPool[] = allPoolsRaw;
+  const excludeTokens = routingConfig.excludeTokens;
+  if (excludeTokens && excludeTokens.length > 0) {
+    prunedPoolsRaw = [];
+    for (const pool of allPoolsRaw) {
+      const excludeToken0 = excludeTokens.find((ex) => pool.token0.id == ex);
+      const excludeToken1 = excludeTokens.find((ex) => pool.token1.id == ex);
+
+      if (excludeToken0 || excludeToken1) continue;
+
+      prunedPoolsRaw.push(pool);
+    }
+  }
+
   log.info(
     { samplePools: allPoolsRaw.slice(0, 3) },
     'Got all pools from V3 subgraph provider'
   );
 
-  const allPools = _.map(allPoolsRaw, (pool) => {
+  const allPools = _.map(prunedPoolsRaw, (pool) => {
     return {
       ...pool,
       token0: {
@@ -569,9 +584,23 @@ export async function getV3CandidatePools({
 
   const tokenPairs = _.compact(tokenPairsRaw);
 
+  // Only consider pairs where neither tokens are to be excluded.
+  let filteredTokenPairs: [Token, Token, FeeAmount][] = tokenPairs;
+  if (excludeTokens && excludeTokens.length > 0) {
+    filteredTokenPairs = [];
+    for (const [token0, token1, fee] of tokenPairs) {
+      const excludeToken0 = excludeTokens.find((ex) => token0.address == ex);
+      const excludeToken1 = excludeTokens.find((ex) => token1.address == ex);
+
+      if (excludeToken0 || excludeToken1) continue;
+
+      filteredTokenPairs.push([token0, token1, fee]);
+    }
+  }
+
   const beforePoolsLoad = Date.now();
 
-  const poolAccessor = await poolProvider.getPools(tokenPairs);
+  const poolAccessor = await poolProvider.getPools(filteredTokenPairs);
 
   metric.putMetric(
     'V3PoolsLoad',

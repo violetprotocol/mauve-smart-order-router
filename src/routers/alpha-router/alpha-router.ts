@@ -256,6 +256,10 @@ export type AlphaRouterConfig = {
    */
   forceCrossProtocol: boolean;
   /**
+   * Force the alpha router to exclude specific tokens and their associated pools from the route.
+   */
+  excludeTokens?: string[];
+  /**
    * The minimum percentage of the input token to use for each route in a split route.
    * All routes will have a multiple of this value. For example is distribution percentage is 5,
    * a potential return swap would be:
