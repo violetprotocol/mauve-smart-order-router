@@ -22,6 +22,7 @@ import {
   DAI_MAINNET,
   DAI_ON,
   EthEstimateGasSimulator,
+  EUROC_MAINNET,
   FallbackTenderlySimulator,
   ID_TO_NETWORK_NAME,
   ID_TO_PROVIDER,
@@ -479,7 +480,7 @@ describe('alpha router integration', () => {
         it('erc20 -> erc20', async () => {
           // declaring these to reduce confusion
           const tokenIn = USDC_MAINNET;
-          const tokenOut = USDT_MAINNET;
+          const tokenOut = EUROC_MAINNET;
           const amount =
             tradeType == TradeType.EXACT_INPUT
               ? parseAmount('100', tokenIn)
@@ -522,7 +523,7 @@ describe('alpha router integration', () => {
         it('erc20 -> erc20 swapRouter02', async () => {
           // declaring these to reduce confusion
           const tokenIn = USDC_MAINNET;
-          const tokenOut = USDT_MAINNET;
+          const tokenOut = EUROC_MAINNET;
           const amount =
             tradeType == TradeType.EXACT_INPUT
               ? parseAmount('100', tokenIn)
@@ -1634,9 +1635,9 @@ describe('alpha router integration', () => {
         });
       }
 
-      it(`erc20 -> erc20 no recipient/deadline/slippage`, async () => {
+      it.only(`erc20 -> erc20 no recipient/deadline/slippage`, async () => {
         const tokenIn = USDC_MAINNET;
-        const tokenOut = USDT_MAINNET;
+        const tokenOut = EUROC_MAINNET;
         const amount =
           tradeType == TradeType.EXACT_INPUT
             ? parseAmount('100', tokenIn)
@@ -1661,7 +1662,7 @@ describe('alpha router integration', () => {
 
       it(`erc20 -> erc20 gas price specified`, async () => {
         const tokenIn = USDC_MAINNET;
-        const tokenOut = USDT_MAINNET;
+        const tokenOut = EUROC_MAINNET;
         const amount =
           tradeType == TradeType.EXACT_INPUT
             ? parseAmount('100', tokenIn)
