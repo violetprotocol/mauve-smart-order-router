@@ -16,11 +16,12 @@ import _ from 'lodash';
 import NodeCache from 'node-cache';
 
 import {
+  BlockNativeGasPriceProvider,
   CachingGasStationProvider,
   CachingTokenProviderWithFallback,
   CachingV3PoolProvider,
   EIP1559GasPriceProvider,
-  ETHGasStationInfoProvider,
+  HighGasPriceProvider,
   IOnChainQuoteProvider,
   ISwapRouterProvider,
   LegacyGasPriceProvider,
@@ -79,10 +80,7 @@ import {
   V3Route,
 } from '../router';
 
-import {
-  DEFAULT_ROUTING_CONFIG_BY_CHAIN,
-  ETH_GAS_STATION_API_URL,
-} from './config';
+import { DEFAULT_ROUTING_CONFIG_BY_CHAIN } from './config';
 import {
   RouteWithValidQuote,
   V3RouteWithValidQuote,
@@ -463,21 +461,28 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
       this.v3SubgraphProvider = new V3SubgraphProvider(chainId);
     }
 
-    this.gasPriceProvider =
-      gasPriceProvider ??
-      new CachingGasStationProvider(
+    if (gasPriceProvider) {
+      this.gasPriceProvider = gasPriceProvider;
+    } else if (this.provider instanceof JsonRpcProvider) {
+      this.gasPriceProvider = new CachingGasStationProvider(
         chainId,
-        this.provider instanceof JsonRpcProvider
-          ? new OnChainGasPriceProvider(
-              chainId,
-              new EIP1559GasPriceProvider(this.provider),
-              new LegacyGasPriceProvider(this.provider)
-            )
-          : new ETHGasStationInfoProvider(ETH_GAS_STATION_API_URL),
+        new OnChainGasPriceProvider(
+          chainId,
+          new EIP1559GasPriceProvider(this.provider),
+          new LegacyGasPriceProvider(this.provider)
+        ),
         new NodeJSCache<GasPrice>(
           new NodeCache({ stdTTL: 15, useClones: false })
         )
       );
+    } else if (process.env.BLOCKNATIVE_APIKEY) {
+      this.gasPriceProvider = new BlockNativeGasPriceProvider(
+        process.env.BLOCKNATIVE_APIKEY
+      );
+    } else {
+      this.gasPriceProvider = new HighGasPriceProvider();
+    }
+
     this.v3GasModelFactory =
       v3GasModelFactory ?? new V3HeuristicGasModelFactory();
 
@@ -714,6 +719,7 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
     swapConfig?: SwapOptions,
     partialRoutingConfig: Partial<AlphaRouterConfig> = {}
   ): Promise<SwapRoute | null> {
+    console.log('routing');
     metric.putMetric(
       `QuoteRequestedForChain${this.chainId}`,
       1,
@@ -751,7 +757,9 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
 
     // Get an estimate of the gas price to use when estimating gas cost of different routes.
     const beforeGas = Date.now();
+    console.log('getting gas price');
     const { gasPriceWei } = await this.gasPriceProvider.getGasPrice();
+    console.log('got gas price');
 
     metric.putMetric(
       'GasPriceLoad',
@@ -777,6 +785,8 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
         l2GasDataProvider: this.l2GasDataProvider,
       }),
     ]);
+
+    console.log('built gas model');
 
     if (protocolsSet.size == 0 || protocolsSet.has(Protocol.V3)) {
       log.info({ protocols, tradeType }, 'Routing across Mauve');
@@ -832,6 +842,7 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
     if (!swapRouteRaw) {
       return null;
     }
+    console.log('got best swap route');
 
     const {
       quote,
@@ -857,6 +868,7 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
     if (swapConfig) {
       methodParameters = buildSwapMethodParameters(trade, swapConfig);
     }
+    console.log('built swap method parameters');
 
     metric.putMetric(
       'FindBestSwapRoute',
@@ -910,6 +922,8 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
           : undefined,
         { blockNumber }
       );
+      console.log('simulated transaction');
+
       metric.putMetric(
         'SimulateTransaction',
         Date.now() - beforeSimulate,
