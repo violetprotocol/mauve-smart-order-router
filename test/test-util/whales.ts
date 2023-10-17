@@ -30,9 +30,9 @@ export const WHALES = (token: Currency): string => {
     case nativeOnChain(ChainId.GOERLI):
       return '0x08505F42D5666225d5d73B842dAdB87CCA44d1AE';
     case WETH9[1]:
-      return '0x06920c9fc643de77b99cb7670a944ad31eaaa260';
+      return '0x2fEb1512183545f48f6b9C5b4EbfCaF49CfCa6F3';
     case WNATIVE_ON(ChainId.MAINNET):
-      return '0xf04a5cc80b1e94c69b48f5ee68a08cd2f09a7c3e';
+      return '0x2fEb1512183545f48f6b9C5b4EbfCaF49CfCa6F3';
     case WNATIVE_ON(ChainId.ARBITRUM_ONE):
       return '0x80a9ae39310abf666a87c743d6ebbd0e8c42158e';
     case WNATIVE_ON(ChainId.KOVAN):
