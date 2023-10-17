@@ -719,7 +719,6 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
     swapConfig?: SwapOptions,
     partialRoutingConfig: Partial<AlphaRouterConfig> = {}
   ): Promise<SwapRoute | null> {
-    console.log('routing');
     metric.putMetric(
       `QuoteRequestedForChain${this.chainId}`,
       1,
@@ -757,9 +756,7 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
 
     // Get an estimate of the gas price to use when estimating gas cost of different routes.
     const beforeGas = Date.now();
-    console.log('getting gas price');
     const { gasPriceWei } = await this.gasPriceProvider.getGasPrice();
-    console.log('got gas price');
 
     metric.putMetric(
       'GasPriceLoad',
@@ -786,8 +783,6 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
       }),
     ]);
 
-    console.log('built gas model');
-
     if (protocolsSet.size == 0 || protocolsSet.has(Protocol.V3)) {
       log.info({ protocols, tradeType }, 'Routing across Mauve');
       quotePromises.push(
@@ -803,7 +798,9 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
         )
       );
     } else {
-      throw new Error('Invalid protocolsSet specified');
+      throw new Error(
+        `Invalid protocolsSet specified: ${JSON.stringify(protocolsSet)}`
+      );
     }
 
     const routesWithValidQuotesByProtocol = await Promise.all(quotePromises);
@@ -842,7 +839,6 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
     if (!swapRouteRaw) {
       return null;
     }
-    console.log('got best swap route');
 
     const {
       quote,
@@ -868,7 +864,6 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
     if (swapConfig) {
       methodParameters = buildSwapMethodParameters(trade, swapConfig);
     }
-    console.log('built swap method parameters');
 
     metric.putMetric(
       'FindBestSwapRoute',
@@ -922,7 +917,6 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
           : undefined,
         { blockNumber }
       );
-      console.log('simulated transaction');
 
       metric.putMetric(
         'SimulateTransaction',
