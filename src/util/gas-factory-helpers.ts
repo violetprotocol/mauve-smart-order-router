@@ -113,13 +113,19 @@ export async function getHighestLiquidityV3USDPool(
     );
   }
 
-  const usdPools = _([
-    FeeAmount.HIGH,
-    FeeAmount.MEDIUM,
-    FeeAmount.LOW,
-    FeeAmount.LOWER,
-    FeeAmount.LOWEST,
-  ])
+  // This prevents fetching data for all fee tiers since we only have 1 USDC/WETH pool deployed at the moment.
+  const feeAmounts =
+    chainId == ChainId.MAINNET
+      ? [FeeAmount.LOWER]
+      : [
+          FeeAmount.HIGH,
+          FeeAmount.MEDIUM,
+          FeeAmount.LOW,
+          FeeAmount.LOWER,
+          FeeAmount.LOWEST,
+        ];
+
+  const usdPools = _(feeAmounts)
     .flatMap((feeAmount) => {
       return _.map<Token, [Token, Token, FeeAmount]>(usdTokens, (usdToken) => [
         wrappedCurrency,
