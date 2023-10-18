@@ -6,7 +6,6 @@ import { log } from '../util/log';
 
 import { GasPrice, IGasPriceProvider } from './gas-price-provider';
 
-// Gas prices from ethgasstation are in x10 Gwei. Must divide by 10 to use.
 export type BlockNativeGasPriceResponse = {
   system: string;
   network: string;
@@ -70,7 +69,6 @@ export class BlockNativeGasPriceProvider extends IGasPriceProvider {
       'Gas price response from API. About to parse "fast" to big number'
     );
 
-    // Gas prices from ethgasstation are in GweiX10.
     const baseFee = BigNumber.from(
       Math.ceil(gasPriceResponse.blockPrices[0]!.baseFeePerGas)
     );
