@@ -682,6 +682,7 @@ describe('alpha router integration', () => {
               : BigNumber.from(amount.quotient.toString());
           expect(amountOut).toEqual(amountOutEdgesTotal);
 
+          // We can't actually execute a swap against mainnet without an EAT
           // await validateExecuteSwap(
           //   SwapType.SWAP_ROUTER_02,
           //   quote,
@@ -793,6 +794,7 @@ describe('alpha router integration', () => {
 
           await validateSwapRoute(quote, quoteGasAdjusted, tradeType);
 
+          // We can't actually execute a swap against mainnet without an EAT
           // await validateExecuteSwap(
           //   SwapType.SWAP_ROUTER_02,
           //   quote,
@@ -833,6 +835,7 @@ describe('alpha router integration', () => {
           const { quote, quoteGasAdjusted } = swap!;
 
           await validateSwapRoute(quote, quoteGasAdjusted, tradeType);
+          // We can't actually execute a swap against mainnet without an EAT
           // await validateExecuteSwap(
           //   SwapType.SWAP_ROUTER_02,
           //   quote,
