@@ -70,4 +70,4 @@ export const DEFAULT_ROUTING_CONFIG_BY_CHAIN = (
   }
 };
 
-export const BLOCKNATIVE_APIKEY = '';
+export const BLOCKNATIVE_APIKEY = 'bba51317-1a55-4e83-9ea5-7a6dc3014795';
