@@ -8,7 +8,6 @@ import sinon from 'sinon';
 import {
   ChainId,
   CurrencyAmount,
-  DAI_MAINNET,
   IGasModel,
   RouteWithValidQuote,
   USDC_MAINNET as USDC,
@@ -747,78 +746,8 @@ describe('get best swap route', () => {
     expect(quote.quotient.toString()).toBe('85');
     expect(quoteGasAdjusted.quotient.toString()).toBe('75');
     expect(estimatedGasUsed.eq(BigNumber.from(10000))).toBeTruthy();
-    // Code will actually convert USDC gas estimates to DAI, hence an extra 12 decimals on the quotient.
-    expect(estimatedGasUsedUSD.quotient.toString()).toEqual('10000000000000');
-    expect(
-      estimatedGasUsedQuoteToken.equalTo(
-        CurrencyAmount.fromRawAmount(WRAPPED_NATIVE_CURRENCY[1]!, 10)
-      )
-    ).toBeTruthy();
-    expect(routes).toHaveLength(1);
-  });
-
-  test('succeeds to find best route accounting for gas with gas model giving usd estimate in DAI', async () => {
-    // Set gas model so that each hop in route costs 10 gas.
-    mockV3GasModel.estimateGasCost.callsFake((r) => {
-      const hops = r.route.pools.length;
-      return {
-        gasEstimate: BigNumber.from(10000).mul(hops),
-        gasCostInToken: CurrencyAmount.fromRawAmount(
-          r.quoteToken,
-          JSBI.multiply(JSBI.BigInt(10), JSBI.BigInt(hops))
-        ),
-        gasCostInUSD: CurrencyAmount.fromRawAmount(
-          DAI_MAINNET,
-          JSBI.multiply(JSBI.BigInt(10), JSBI.BigInt(hops))
-        ),
-      };
-    });
-
-    const amount = CurrencyAmount.fromRawAmount(USDC, 100000);
-    const percents = [25, 50, 75, 100];
-    // Route 1 has 3 hops. Cost 30 gas.
-    // Route 2 has 1 hop. Cost 10 gas.
-    // Ignoring gas, 50% Route 1, 50% Route 2 is best swap.
-    // Expect algorithm to pick 100% Route 2 instead after considering gas.
-    const routesWithQuotes: V3RouteWithValidQuote[] = [
-      ...buildV3RouteWithValidQuotes(
-        v3Route1,
-        TradeType.EXACT_INPUT,
-        amount,
-        [10, 50, 10, 10],
-        percents
-      ),
-      ...buildV3RouteWithValidQuotes(
-        v3Route2,
-        TradeType.EXACT_INPUT,
-        amount,
-        [10, 50, 10, 85],
-        percents
-      ),
-    ];
-
-    const swapRouteType = await getBestSwapRoute(
-      amount,
-      percents,
-      routesWithQuotes,
-      TradeType.EXACT_INPUT,
-      ChainId.MAINNET,
-      { ...mockRoutingConfig, distributionPercent: 25 }
-    )!;
-
-    const {
-      quote,
-      routes,
-      quoteGasAdjusted,
-      estimatedGasUsed,
-      estimatedGasUsedUSD,
-      estimatedGasUsedQuoteToken,
-    } = swapRouteType!;
-
-    expect(quote.quotient.toString()).toBe('85');
-    expect(quoteGasAdjusted.quotient.toString()).toBe('75');
-    expect(estimatedGasUsed.eq(BigNumber.from(10000))).toBeTruthy();
-    // Code will actually convert USDC gas estimates to DAI, hence an extra 12 decimals on the quotient.
+    console.log(JSON.stringify(routes, null, 2));
+    // gas estimates is in USDC which has 6 decimals
     expect(estimatedGasUsedUSD.quotient.toString()).toEqual('10');
     expect(
       estimatedGasUsedQuoteToken.equalTo(

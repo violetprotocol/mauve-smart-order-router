@@ -21,7 +21,6 @@ import {
   CachingTokenProviderWithFallback,
   CachingV3PoolProvider,
   EIP1559GasPriceProvider,
-  HighGasPriceProvider,
   IOnChainQuoteProvider,
   ISwapRouterProvider,
   LegacyGasPriceProvider,
@@ -80,7 +79,7 @@ import {
   V3Route,
 } from '../router';
 
-import { DEFAULT_ROUTING_CONFIG_BY_CHAIN } from './config';
+import { BLOCKNATIVE_APIKEY, DEFAULT_ROUTING_CONFIG_BY_CHAIN } from './config';
 import {
   RouteWithValidQuote,
   V3RouteWithValidQuote,
@@ -475,12 +474,10 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
           new NodeCache({ stdTTL: 15, useClones: false })
         )
       );
-    } else if (process.env.BLOCKNATIVE_APIKEY) {
-      this.gasPriceProvider = new BlockNativeGasPriceProvider(
-        process.env.BLOCKNATIVE_APIKEY
-      );
     } else {
-      this.gasPriceProvider = new HighGasPriceProvider();
+      this.gasPriceProvider = new BlockNativeGasPriceProvider(
+        BLOCKNATIVE_APIKEY
+      );
     }
 
     this.v3GasModelFactory =

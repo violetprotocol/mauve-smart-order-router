@@ -12,7 +12,7 @@ import {
   CachingTokenListProvider,
   CurrencyAmount,
   DAI_MAINNET as DAI,
-  ETHGasStationInfoProvider,
+  BlockNativeGasPriceProvider,
   FallbackTenderlySimulator,
   MixedRoute,
   OnChainQuoteProvider,
@@ -66,7 +66,7 @@ describe('alpha router', () => {
   let mockOnChainQuoteProvider: sinon.SinonStubbedInstance<OnChainQuoteProvider>;
   let mockV3GasModelFactory: sinon.SinonStubbedInstance<V3HeuristicGasModelFactory>;
 
-  let mockGasPriceProvider: sinon.SinonStubbedInstance<ETHGasStationInfoProvider>;
+  let mockGasPriceProvider: sinon.SinonStubbedInstance<BlockNativeGasPriceProvider>;
 
   let mockBlockTokenListProvider: sinon.SinonStubbedInstance<CachingTokenListProvider>;
   let mockTokenValidatorProvider: sinon.SinonStubbedInstance<TokenValidatorProvider>;
@@ -193,7 +193,9 @@ describe('alpha router', () => {
       }
     );
 
-    mockGasPriceProvider = sinon.createStubInstance(ETHGasStationInfoProvider);
+    mockGasPriceProvider = sinon.createStubInstance(
+      BlockNativeGasPriceProvider
+    );
     mockGasPriceProvider.getGasPrice.resolves({
       gasPriceWei: mockGasPriceWeiBN,
     });
