@@ -746,7 +746,7 @@ describe('get best swap route', () => {
     expect(quote.quotient.toString()).toBe('85');
     expect(quoteGasAdjusted.quotient.toString()).toBe('75');
     expect(estimatedGasUsed.eq(BigNumber.from(10000))).toBeTruthy();
-    console.log(JSON.stringify(routes, null, 2));
+
     // gas estimates is in USDC which has 6 decimals
     expect(estimatedGasUsedUSD.quotient.toString()).toEqual('10');
     expect(
