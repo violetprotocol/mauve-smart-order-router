@@ -22,6 +22,7 @@ import {
   DAI_MAINNET,
   DAI_ON,
   EthEstimateGasSimulator,
+  EUROC_MAINNET,
   FallbackTenderlySimulator,
   ID_TO_NETWORK_NAME,
   ID_TO_PROVIDER,
@@ -78,7 +79,7 @@ import _ from 'lodash';
 import NodeCache from 'node-cache';
 import { DEFAULT_ROUTING_CONFIG_BY_CHAIN } from '../../../../src/routers/alpha-router/config';
 import { getBalanceAndApprove } from '../../../test-util/getBalanceAndApprove';
-const FORK_BLOCK = 16075500;
+const FORK_BLOCK = 18370083;
 const SLIPPAGE = new Percent(15, 100); // 5% or 10_000?
 
 const checkQuoteToken = (
@@ -379,7 +380,7 @@ describe('alpha router integration', () => {
       alice._address,
       [parseAmount('4000', WETH9[1])],
       [
-        '0x06920c9fc643de77b99cb7670a944ad31eaaa260', // WETH whale
+        WHALES(WETH9[1]), // WETH whale
       ]
     );
 
@@ -473,13 +474,12 @@ describe('alpha router integration', () => {
    *  tests are 1:1 with routing api integ tests
    */
   for (const tradeType of [TradeType.EXACT_INPUT, TradeType.EXACT_OUTPUT]) {
-    // TODO-MAUVE: Restore these tests once Mauve is deployed on Mainnet
     describe(`${ID_TO_NETWORK_NAME(1)} alpha - ${tradeType}`, () => {
-      describe.skip(`+ Execute on Hardhat Fork`, () => {
+      describe(`+ Execute on Hardhat Fork`, () => {
         it('erc20 -> erc20', async () => {
           // declaring these to reduce confusion
           const tokenIn = USDC_MAINNET;
-          const tokenOut = USDT_MAINNET;
+          const tokenOut = EUROC_MAINNET;
           const amount =
             tradeType == TradeType.EXACT_INPUT
               ? parseAmount('100', tokenIn)
@@ -503,26 +503,27 @@ describe('alpha router integration', () => {
           expect(swap).toBeDefined();
           expect(swap).not.toBeNull();
 
-          const { quote, quoteGasAdjusted, methodParameters } = swap!;
+          const { quote, quoteGasAdjusted } = swap!;
 
           await validateSwapRoute(quote, quoteGasAdjusted, tradeType, 100, 10);
 
-          await validateExecuteSwap(
-            SwapType.SWAP_ROUTER_02,
-            quote,
-            tokenIn,
-            tokenOut,
-            methodParameters,
-            tradeType,
-            100,
-            100
-          );
+          // We can't actually execute a swap against mainnet without an EAT
+          // await validateExecuteSwap(
+          //   SwapType.SWAP_ROUTER_02,
+          //   quote,
+          //   tokenIn,
+          //   tokenOut,
+          //   methodParameters,
+          //   tradeType,
+          //   100,
+          //   100
+          // );
         });
 
         it('erc20 -> erc20 swapRouter02', async () => {
           // declaring these to reduce confusion
           const tokenIn = USDC_MAINNET;
-          const tokenOut = USDT_MAINNET;
+          const tokenOut = EUROC_MAINNET;
           const amount =
             tradeType == TradeType.EXACT_INPUT
               ? parseAmount('100', tokenIn)
@@ -546,20 +547,21 @@ describe('alpha router integration', () => {
           expect(swap).toBeDefined();
           expect(swap).not.toBeNull();
 
-          const { quote, quoteGasAdjusted, methodParameters } = swap!;
+          const { quote, quoteGasAdjusted } = swap!;
 
           await validateSwapRoute(quote, quoteGasAdjusted, tradeType, 100, 10);
 
-          await validateExecuteSwap(
-            SwapType.SWAP_ROUTER_02,
-            quote,
-            tokenIn,
-            tokenOut,
-            methodParameters,
-            tradeType,
-            100,
-            100
-          );
+          // We can't actually execute a swap against mainnet without an EAT
+          // await validateExecuteSwap(
+          //   SwapType.SWAP_ROUTER_02,
+          //   quote,
+          //   tokenIn,
+          //   tokenOut,
+          //   methodParameters,
+          //   tradeType,
+          //   100,
+          //   100
+          // );
         });
 
         it(`erc20 -> eth`, async () => {
@@ -567,7 +569,7 @@ describe('alpha router integration', () => {
           const tokenOut = Ether.onChain(1) as Currency;
           const amount =
             tradeType == TradeType.EXACT_INPUT
-              ? parseAmount('1000000', tokenIn)
+              ? parseAmount('10000', tokenIn)
               : parseAmount('10', tokenOut);
 
           const swap = await alphaRouter.route(
@@ -587,19 +589,20 @@ describe('alpha router integration', () => {
           expect(swap).toBeDefined();
           expect(swap).not.toBeNull();
 
-          const { quote, quoteGasAdjusted, methodParameters } = swap!;
+          const { quote, quoteGasAdjusted } = swap!;
 
           await validateSwapRoute(quote, quoteGasAdjusted, tradeType);
 
-          await validateExecuteSwap(
-            SwapType.SWAP_ROUTER_02,
-            quote,
-            tokenIn,
-            tokenOut,
-            methodParameters,
-            tradeType,
-            1000000
-          );
+          // We can't actually execute a swap against mainnet without an EAT
+          // await validateExecuteSwap(
+          //   SwapType.SWAP_ROUTER_02,
+          //   quote,
+          //   tokenIn,
+          //   tokenOut,
+          //   methodParameters,
+          //   tradeType,
+          //   1000000
+          // );
         });
 
         it(`erc20 -> eth large trade`, async () => {
@@ -622,13 +625,13 @@ describe('alpha router integration', () => {
             },
             {
               ...ROUTING_CONFIG,
-              minSplits: 2,
+              minSplits: 1,
             }
           );
           expect(swap).toBeDefined();
           expect(swap).not.toBeNull();
 
-          const { quote, methodParameters } = swap!;
+          const { quote } = swap!;
 
           const { route } = swap!;
 
@@ -679,21 +682,22 @@ describe('alpha router integration', () => {
               : BigNumber.from(amount.quotient.toString());
           expect(amountOut).toEqual(amountOutEdgesTotal);
 
-          await validateExecuteSwap(
-            SwapType.SWAP_ROUTER_02,
-            quote,
-            tokenIn,
-            tokenOut,
-            methodParameters,
-            tradeType,
-            10000
-          );
+          // We can't actually execute a swap against mainnet without an EAT
+          // await validateExecuteSwap(
+          //   SwapType.SWAP_ROUTER_02,
+          //   quote,
+          //   tokenIn,
+          //   tokenOut,
+          //   methodParameters,
+          //   tradeType,
+          //   10000
+          // );
         });
 
         it(`eth -> erc20`, async () => {
           /// Fails for v3 for some reason, ProviderGasError
           const tokenIn = Ether.onChain(1) as Currency;
-          const tokenOut = UNI_MAINNET;
+          const tokenOut = USDC_MAINNET;
           const amount =
             tradeType == TradeType.EXACT_INPUT
               ? parseAmount('10', tokenIn)
@@ -711,131 +715,62 @@ describe('alpha router integration', () => {
             },
             {
               ...ROUTING_CONFIG,
-              protocols: [Protocol.V2],
             }
           );
           expect(swap).toBeDefined();
           expect(swap).not.toBeNull();
 
-          const { quote, methodParameters } = swap!;
+          const { quote, quoteGasAdjusted, methodParameters } = swap!;
 
           expect(methodParameters).not.toBeUndefined();
 
-          const { tokenInBefore, tokenInAfter, tokenOutBefore, tokenOutAfter } =
-            await executeSwap(
-              SwapType.SWAP_ROUTER_02,
-              methodParameters!,
-              tokenIn,
-              tokenOut
-            );
+          await validateSwapRoute(quote, quoteGasAdjusted, tradeType);
 
-          if (tradeType == TradeType.EXACT_INPUT) {
-            // We've swapped 10 ETH + gas costs
-            expect(
-              tokenInBefore
-                .subtract(tokenInAfter)
-                .greaterThan(parseAmount('10', tokenIn))
-            ).toBe(true);
-            checkQuoteToken(
-              tokenOutBefore,
-              tokenOutAfter,
-              CurrencyAmount.fromRawAmount(tokenOut, quote.quotient)
-            );
-          } else {
-            /**
-             * @dev it is possible for an exactOut to generate more tokens on V2 due to precision errors
-             */
-            expect(
-              !tokenOutAfter
-                .subtract(tokenOutBefore)
-                // == .greaterThanOrEqualTo
-                .lessThan(
-                  CurrencyAmount.fromRawAmount(
-                    tokenOut,
-                    expandDecimals(tokenOut, 10000)
-                  )
-                )
-            ).toBe(true);
-            // Can't easily check slippage for ETH due to gas costs effecting ETH balance.
-          }
-        });
+          // const { tokenInBefore, tokenInAfter, tokenOutBefore, tokenOutAfter } =
+          //   await executeSwap(
+          //     SwapType.SWAP_ROUTER_02,
+          //     methodParameters!,
+          //     tokenIn,
+          //     tokenOut
+          //   );
 
-        it(`eth -> erc20 swaprouter02`, async () => {
-          /// Fails for v3 for some reason, ProviderGasError
-          const tokenIn = Ether.onChain(1) as Currency;
-          const tokenOut = UNI_MAINNET;
-          const amount =
-            tradeType == TradeType.EXACT_INPUT
-              ? parseAmount('10', tokenIn)
-              : parseAmount('10000', tokenOut);
-
-          const swap = await alphaRouter.route(
-            amount,
-            getQuoteToken(tokenIn, tokenOut, tradeType),
-            tradeType,
-            {
-              type: SwapType.SWAP_ROUTER_02,
-              recipient: alice._address,
-              slippageTolerance: SLIPPAGE,
-              deadline: parseDeadline(360),
-            },
-            {
-              ...ROUTING_CONFIG,
-              protocols: [Protocol.V2],
-            }
-          );
-          expect(swap).toBeDefined();
-          expect(swap).not.toBeNull();
-
-          const { quote, methodParameters } = swap!;
-
-          expect(methodParameters).not.toBeUndefined();
-
-          const { tokenInBefore, tokenInAfter, tokenOutBefore, tokenOutAfter } =
-            await executeSwap(
-              SwapType.SWAP_ROUTER_02,
-              methodParameters!,
-              tokenIn,
-              tokenOut
-            );
-
-          if (tradeType == TradeType.EXACT_INPUT) {
-            // We've swapped 10 ETH + gas costs
-            expect(
-              tokenInBefore
-                .subtract(tokenInAfter)
-                .greaterThan(parseAmount('10', tokenIn))
-            ).toBe(true);
-            checkQuoteToken(
-              tokenOutBefore,
-              tokenOutAfter,
-              CurrencyAmount.fromRawAmount(tokenOut, quote.quotient)
-            );
-          } else {
-            /**
-             * @dev it is possible for an exactOut to generate more tokens on V2 due to precision errors
-             */
-            expect(
-              !tokenOutAfter
-                .subtract(tokenOutBefore)
-                // == .greaterThanOrEqualTo
-                .lessThan(
-                  CurrencyAmount.fromRawAmount(
-                    tokenOut,
-                    expandDecimals(tokenOut, 10000)
-                  )
-                )
-            ).toBe(true);
-            // Can't easily check slippage for ETH due to gas costs effecting ETH balance.
-          }
+          // if (tradeType == TradeType.EXACT_INPUT) {
+          //   // We've swapped 10 ETH + gas costs
+          //   expect(
+          //     tokenInBefore
+          //       .subtract(tokenInAfter)
+          //       .greaterThan(parseAmount('10', tokenIn))
+          //   ).toBe(true);
+          //   checkQuoteToken(
+          //     tokenOutBefore,
+          //     tokenOutAfter,
+          //     CurrencyAmount.fromRawAmount(tokenOut, quote.quotient)
+          //   );
+          // } else {
+          //   /**
+          //    * @dev it is possible for an exactOut to generate more tokens on V2 due to precision errors
+          //    */
+          //   expect(
+          //     !tokenOutAfter
+          //       .subtract(tokenOutBefore)
+          //       // == .greaterThanOrEqualTo
+          //       .lessThan(
+          //         CurrencyAmount.fromRawAmount(
+          //           tokenOut,
+          //           expandDecimals(tokenOut, 10000)
+          //         )
+          //       )
+          //   ).toBe(true);
+          //   // Can't easily check slippage for ETH due to gas costs effecting ETH balance.
+          // }
         });
 
         it(`weth -> erc20`, async () => {
           const tokenIn = WETH9[1];
-          const tokenOut = DAI_MAINNET;
+          const tokenOut = USDC_MAINNET;
           const amount =
             tradeType == TradeType.EXACT_INPUT
-              ? parseAmount('100', tokenIn)
+              ? parseAmount('10', tokenIn)
               : parseAmount('100', tokenOut);
 
           const swap = await alphaRouter.route(
@@ -855,18 +790,21 @@ describe('alpha router integration', () => {
           expect(swap).toBeDefined();
           expect(swap).not.toBeNull();
 
-          const { quote, methodParameters } = swap!;
+          const { quote, quoteGasAdjusted } = swap!;
 
-          await validateExecuteSwap(
-            SwapType.SWAP_ROUTER_02,
-            quote,
-            tokenIn,
-            tokenOut,
-            methodParameters,
-            tradeType,
-            100,
-            100
-          );
+          await validateSwapRoute(quote, quoteGasAdjusted, tradeType);
+
+          // We can't actually execute a swap against mainnet without an EAT
+          // await validateExecuteSwap(
+          //   SwapType.SWAP_ROUTER_02,
+          //   quote,
+          //   tokenIn,
+          //   tokenOut,
+          //   methodParameters,
+          //   tradeType,
+          //   100,
+          //   100
+          // );
         });
 
         it(`erc20 -> weth`, async () => {
@@ -875,7 +813,7 @@ describe('alpha router integration', () => {
           const amount =
             tradeType == TradeType.EXACT_INPUT
               ? parseAmount('100', tokenIn)
-              : parseAmount('100', tokenOut);
+              : parseAmount('10', tokenOut);
 
           const swap = await alphaRouter.route(
             amount,
@@ -894,23 +832,25 @@ describe('alpha router integration', () => {
           expect(swap).toBeDefined();
           expect(swap).not.toBeNull();
 
-          const { quote, methodParameters } = swap!;
+          const { quote, quoteGasAdjusted } = swap!;
 
-          await validateExecuteSwap(
-            SwapType.SWAP_ROUTER_02,
-            quote,
-            tokenIn,
-            tokenOut,
-            methodParameters,
-            tradeType,
-            100,
-            100
-          );
+          await validateSwapRoute(quote, quoteGasAdjusted, tradeType);
+          // We can't actually execute a swap against mainnet without an EAT
+          // await validateExecuteSwap(
+          //   SwapType.SWAP_ROUTER_02,
+          //   quote,
+          //   tokenIn,
+          //   tokenOut,
+          //   methodParameters,
+          //   tradeType,
+          //   100,
+          //   100
+          // );
         });
 
         it('erc20 -> erc20 v3 only', async () => {
           const tokenIn = USDC_MAINNET;
-          const tokenOut = USDT_MAINNET;
+          const tokenOut = EUROC_MAINNET;
           const amount =
             tradeType == TradeType.EXACT_INPUT
               ? parseAmount('100', tokenIn)
@@ -934,7 +874,7 @@ describe('alpha router integration', () => {
           expect(swap).toBeDefined();
           expect(swap).not.toBeNull();
 
-          const { quote, quoteGasAdjusted, methodParameters } = swap!;
+          const { quote, quoteGasAdjusted } = swap!;
 
           const { route } = swap!;
 
@@ -944,16 +884,17 @@ describe('alpha router integration', () => {
 
           await validateSwapRoute(quote, quoteGasAdjusted, tradeType, 100, 10);
 
-          await validateExecuteSwap(
-            SwapType.SWAP_ROUTER_02,
-            quote,
-            tokenIn,
-            tokenOut,
-            methodParameters,
-            tradeType,
-            100,
-            100
-          );
+          // We can't actually execute a swap against mainnet without an EAT
+          // await validateExecuteSwap(
+          //   SwapType.SWAP_ROUTER_02,
+          //   quote,
+          //   tokenIn,
+          //   tokenOut,
+          //   methodParameters,
+          //   tradeType,
+          //   100,
+          //   100
+          // );
         });
       });
 
@@ -1017,7 +958,7 @@ describe('alpha router integration', () => {
           it('erc20 -> erc20 swaprouter02', async () => {
             // declaring these to reduce confusion
             const tokenIn = USDC_MAINNET;
-            const tokenOut = USDT_MAINNET;
+            const tokenOut = EUROC_MAINNET;
             const amount =
               tradeType == TradeType.EXACT_INPUT
                 ? parseAmount('100', tokenIn)
@@ -1152,7 +1093,6 @@ describe('alpha router integration', () => {
               },
               {
                 ...ROUTING_CONFIG,
-                protocols: [Protocol.V2],
               }
             );
             expect(swap).toBeDefined();
@@ -1196,7 +1136,6 @@ describe('alpha router integration', () => {
               },
               {
                 ...ROUTING_CONFIG,
-                protocols: [Protocol.V2],
               }
             );
             expect(swap).toBeDefined();
@@ -1474,7 +1413,6 @@ describe('alpha router integration', () => {
               },
               {
                 ...ROUTING_CONFIG,
-                protocols: [Protocol.V2],
               }
             );
             expect(swap).toBeDefined();
@@ -1580,7 +1518,6 @@ describe('alpha router integration', () => {
               },
               {
                 ...ROUTING_CONFIG,
-                protocols: [Protocol.V2],
               }
             );
             expect(swap).toBeDefined();
@@ -1636,7 +1573,7 @@ describe('alpha router integration', () => {
 
       it(`erc20 -> erc20 no recipient/deadline/slippage`, async () => {
         const tokenIn = USDC_MAINNET;
-        const tokenOut = USDT_MAINNET;
+        const tokenOut = EUROC_MAINNET;
         const amount =
           tradeType == TradeType.EXACT_INPUT
             ? parseAmount('100', tokenIn)
@@ -1661,7 +1598,7 @@ describe('alpha router integration', () => {
 
       it(`erc20 -> erc20 gas price specified`, async () => {
         const tokenIn = USDC_MAINNET;
-        const tokenOut = USDT_MAINNET;
+        const tokenOut = EUROC_MAINNET;
         const amount =
           tradeType == TradeType.EXACT_INPUT
             ? parseAmount('100', tokenIn)
@@ -1848,7 +1785,7 @@ describe('quote for other networks', () => {
     [ChainId.MOONBEAM]: WBTC_MOONBEAM,
   };
   const TEST_ERC20_2: { [chainId in ChainId]: Token } = {
-    [ChainId.MAINNET]: DAI_ON(1),
+    [ChainId.MAINNET]: EUROC_MAINNET,
     [ChainId.ROPSTEN]: DAI_ON(ChainId.ROPSTEN),
     [ChainId.RINKEBY]: DAI_ON(ChainId.RINKEBY),
     [ChainId.GOERLI]: LINK_GOERLI,
@@ -2034,7 +1971,7 @@ describe('quote for other networks', () => {
               {
                 // @ts-ignore[TS7053] - complaining about switch being non exhaustive
                 ...DEFAULT_ROUTING_CONFIG_BY_CHAIN[chain],
-                protocols: [Protocol.V3, Protocol.V2],
+                protocols: [Protocol.V3],
               }
             );
             expect(swap).toBeDefined();
@@ -2140,7 +2077,7 @@ describe('quote for other networks', () => {
                 {
                   // @ts-ignore[TS7053] - complaining about switch being non exhaustive
                   ...DEFAULT_ROUTING_CONFIG_BY_CHAIN[chain],
-                  protocols: [Protocol.V3, Protocol.V2],
+                  protocols: [Protocol.V3],
                 }
               );
               expect(swap).toBeDefined();
@@ -2195,7 +2132,7 @@ describe('quote for other networks', () => {
                 {
                   // @ts-ignore[TS7053] - complaining about switch being non exhaustive
                   ...DEFAULT_ROUTING_CONFIG_BY_CHAIN[chain],
-                  protocols: [Protocol.V3, Protocol.V2],
+                  protocols: [Protocol.V3],
                 }
               );
               expect(swap).toBeDefined();
@@ -2250,7 +2187,7 @@ describe('quote for other networks', () => {
                 {
                   // @ts-ignore[TS7053] - complaining about switch being non exhaustive
                   ...DEFAULT_ROUTING_CONFIG_BY_CHAIN[chain],
-                  protocols: [Protocol.V3, Protocol.V2],
+                  protocols: [Protocol.V3],
                 }
               );
               expect(swap).toBeDefined();

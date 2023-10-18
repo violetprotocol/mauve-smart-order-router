@@ -16,11 +16,11 @@ import _ from 'lodash';
 import NodeCache from 'node-cache';
 
 import {
+  BlockNativeGasPriceProvider,
   CachingGasStationProvider,
   CachingTokenProviderWithFallback,
   CachingV3PoolProvider,
   EIP1559GasPriceProvider,
-  ETHGasStationInfoProvider,
   IOnChainQuoteProvider,
   ISwapRouterProvider,
   LegacyGasPriceProvider,
@@ -79,10 +79,7 @@ import {
   V3Route,
 } from '../router';
 
-import {
-  DEFAULT_ROUTING_CONFIG_BY_CHAIN,
-  ETH_GAS_STATION_API_URL,
-} from './config';
+import { BLOCKNATIVE_APIKEY, DEFAULT_ROUTING_CONFIG_BY_CHAIN } from './config';
 import {
   RouteWithValidQuote,
   V3RouteWithValidQuote,
@@ -463,21 +460,26 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
       this.v3SubgraphProvider = new V3SubgraphProvider(chainId);
     }
 
-    this.gasPriceProvider =
-      gasPriceProvider ??
-      new CachingGasStationProvider(
+    if (gasPriceProvider) {
+      this.gasPriceProvider = gasPriceProvider;
+    } else if (this.provider instanceof JsonRpcProvider) {
+      this.gasPriceProvider = new CachingGasStationProvider(
         chainId,
-        this.provider instanceof JsonRpcProvider
-          ? new OnChainGasPriceProvider(
-              chainId,
-              new EIP1559GasPriceProvider(this.provider),
-              new LegacyGasPriceProvider(this.provider)
-            )
-          : new ETHGasStationInfoProvider(ETH_GAS_STATION_API_URL),
+        new OnChainGasPriceProvider(
+          chainId,
+          new EIP1559GasPriceProvider(this.provider),
+          new LegacyGasPriceProvider(this.provider)
+        ),
         new NodeJSCache<GasPrice>(
           new NodeCache({ stdTTL: 15, useClones: false })
         )
       );
+    } else {
+      this.gasPriceProvider = new BlockNativeGasPriceProvider(
+        BLOCKNATIVE_APIKEY
+      );
+    }
+
     this.v3GasModelFactory =
       v3GasModelFactory ?? new V3HeuristicGasModelFactory();
 
@@ -793,7 +795,9 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
         )
       );
     } else {
-      throw new Error('Invalid protocolsSet specified');
+      throw new Error(
+        `Invalid protocolsSet specified: ${JSON.stringify(protocolsSet)}`
+      );
     }
 
     const routesWithValidQuotesByProtocol = await Promise.all(quotePromises);
@@ -910,6 +914,7 @@ export class AlphaRouter implements IRouter<AlphaRouterConfig> {
           : undefined,
         { blockNumber }
       );
+
       metric.putMetric(
         'SimulateTransaction',
         Date.now() - beforeSimulate,
