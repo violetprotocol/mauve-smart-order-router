@@ -105,6 +105,35 @@ export const UNI_MAINNET = new Token(
   'Uniswap'
 );
 
+
+export const USDC_SEPOLIA = new Token(
+  ChainId.SEPOLIA,
+  '0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8',
+  18,
+  'USDC',
+  'USDC Token'
+);
+export const DAI_SEPOLIA = new Token(
+  ChainId.SEPOLIA,
+  '0xFF34B3d4Aee8ddCd6F9AFFFB6Fe49bD371b8a357',
+  18,
+  'DAI',
+  'DAI Token'
+);
+export const EURS_SEPOLIA = new Token(
+  ChainId.SEPOLIA,
+  '0x6d906e526a4e2Ca02097BA9d0caA3c382F52278E',
+  18,
+  'EURS',
+  'STASIS EURS Token'
+);
+export const LINK_SEPOLIA = new Token(
+  ChainId.SEPOLIA,
+  '0xf8Fb3713D459D7C1018BD0A49D19b4C44290EBE5',
+  18,
+  'LINK',
+  'Chainlink Token'
+);
 export const USDC_ROPSTEN = new Token(
   ChainId.ROPSTEN,
   '0x07865c6e87b9f70255377e024ace6630c1eaa37f',
@@ -704,6 +733,8 @@ export const DAI_ON = (chainId: ChainId): Token => {
   switch (chainId) {
     case ChainId.MAINNET:
       return DAI_MAINNET;
+    case ChainId.SEPOLIA:
+      return DAI_SEPOLIA;
     case ChainId.ROPSTEN:
       return DAI_ROPSTEN;
     case ChainId.RINKEBY:
@@ -772,6 +803,8 @@ export const USDC_ON = (chainId: ChainId): Token => {
       return USDC_MAINNET;
     case ChainId.ROPSTEN:
       return USDC_ROPSTEN;
+    case ChainId.SEPOLIA:
+      return USDC_SEPOLIA;
     case ChainId.RINKEBY:
       return USDC_RINKEBY;
     case ChainId.GOERLI:

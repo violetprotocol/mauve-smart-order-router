@@ -11,6 +11,7 @@ export enum ChainId {
   RINKEBY = 4,
   GOERLI = 5,
   KOVAN = 42,
+  SEPOLIA = 11155111,
   OPTIMISM = 10,
   OPTIMISTIC_KOVAN = 69,
   OPTIMISM_GOERLI = 420,
@@ -28,6 +29,7 @@ export enum ChainId {
 // WIP: Gnosis, Moonbeam
 export const SUPPORTED_CHAINS: ChainId[] = [
   ChainId.MAINNET,
+  ChainId.SEPOLIA,
   // ChainId.RINKEBY,
   // ChainId.ROPSTEN,
   // ChainId.KOVAN,
@@ -84,6 +86,8 @@ export const ID_TO_CHAIN_ID = (id: number): ChainId => {
       return ChainId.RINKEBY;
     case 5:
       return ChainId.GOERLI;
+    case 11155111:
+      return ChainId.SEPOLIA;
     case 42:
       return ChainId.KOVAN;
     case 10:
@@ -121,6 +125,7 @@ export enum ChainName {
   RINKEBY = 'rinkeby',
   GOERLI = 'goerli',
   KOVAN = 'kovan',
+  SEPOLIA = 'sepolia',
   OPTIMISM = 'optimism-mainnet',
   OPTIMISM_GOERLI = 'optimism-goerli',
   OPTIMISTIC_KOVAN = 'optimism-kovan',
@@ -165,6 +170,11 @@ export const NATIVE_NAMES_BY_ID: { [chainId: number]: string[] } = {
     '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
   ],
   [ChainId.ROPSTEN]: [
+    'ETH',
+    'ETHER',
+    '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+  ],
+  [ChainId.SEPOLIA]: [
     'ETH',
     'ETHER',
     '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
@@ -216,6 +226,7 @@ export const NATIVE_CURRENCY: { [chainId: number]: NativeCurrencyName } = {
   [ChainId.RINKEBY]: NativeCurrencyName.ETHER,
   [ChainId.GOERLI]: NativeCurrencyName.ETHER,
   [ChainId.KOVAN]: NativeCurrencyName.ETHER,
+  [ChainId.SEPOLIA]: NativeCurrencyName.ETHER,
   [ChainId.OPTIMISM]: NativeCurrencyName.ETHER,
   [ChainId.OPTIMISM_GOERLI]: NativeCurrencyName.ETHER,
   [ChainId.OPTIMISTIC_KOVAN]: NativeCurrencyName.ETHER,
@@ -242,6 +253,8 @@ export const ID_TO_NETWORK_NAME = (id: number): ChainName => {
       return ChainName.GOERLI;
     case 42:
       return ChainName.KOVAN;
+    case 11155111:
+      return ChainName.SEPOLIA;
     case 10:
       return ChainName.OPTIMISM;
     case 420:
@@ -285,6 +298,8 @@ export const ID_TO_PROVIDER = (id: ChainId): string => {
       return process.env.JSON_RPC_PROVIDER_GORLI!;
     case ChainId.KOVAN:
       return process.env.JSON_RPC_PROVIDER_KOVAN!;
+    case ChainId.SEPOLIA:
+      return process.env.JSON_RPC_PROVIDER_SEPOLIA!;
     case ChainId.OPTIMISM:
       return process.env.JSON_RPC_PROVIDER_OPTIMISM!;
     case ChainId.OPTIMISM_GOERLI:
@@ -314,6 +329,13 @@ export const WRAPPED_NATIVE_CURRENCY: { [chainId in ChainId]: Token } = {
   [ChainId.MAINNET]: new Token(
     1,
     '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+    18,
+    'WETH',
+    'Wrapped Ether'
+  ),
+  [ChainId.SEPOLIA]: new Token(
+    11155111,
+    '0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14',
     18,
     'WETH',
     'Wrapped Ether'
