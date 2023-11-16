@@ -53,6 +53,8 @@ export const WHALES = (token: Currency): string => {
       return '0x47ac0fb4f2d84898e4d9e7b4dab3c24507a6d503';
     case USDC_ON(ChainId.ROPSTEN):
       return '0x366d1dd8558b59398439a01fb6935f6f40ebcd60';
+    case USDC_ON(ChainId.SEPOLIA):
+      return '0x33FaabBe19057C30d1405Fd8d16039255ff7EEf4';
     case USDC_ON(ChainId.RINKEBY):
       return '0x65671d573fc0e62139fbde470bfd03a38b4d5f26';
     case UNI_GOERLI:
@@ -77,6 +79,8 @@ export const WHALES = (token: Currency): string => {
       return '0x48520ff9b32d8b5bf87abf789ea7b3c394c95ebe';
     case DAI_ON(ChainId.ROPSTEN):
       return '0x922b992698381c7dc8d23684e2caef396b0b73a4';
+    case DAI_ON(ChainId.SEPOLIA):
+      return '0x33FaabBe19057C30d1405Fd8d16039255ff7EEf4';
     case DAI_ON(ChainId.RINKEBY):
       return '0xcea4e535d03086dbaa04c71675129654e92cc055';
     case DAI_ON(ChainId.GOERLI):
